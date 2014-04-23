@@ -1,0 +1,44 @@
+Git: Guia rapida de uso
+
+Tengo un directorio git (hize git init o git clone en ese directorio) en mi maquina.
+
+Para acceder a la data en la nube (en los servidores de github) tengo que agregar el remote repository de el servidor de github si este no fue agregado aun (o si no clone de este). 
+  $ git remote add origin https://github.com/miguelmuller/docs.git
+
+Ahora podes hacer fetch para ese "remote" para traer la data. Pero recorda que el fetch te trae las branches (y crea referencias a las mismas) que hay en el "remote" y no te las mergea con las tuyas. Entonces podes hacer el merge vos o podes hacer pull.
+  Un pull hace un fetch y ademas mergea las branches que fueron "trackeadas" (un clone "trackea" la master branch. "trackear" no es mas que hacer que se mergeen las branches cuando se hace un pull).
+  $ git remote show <nombre del remote>  te muestra como tenes configurado un remote para el pull y el push (que branches se mergean automaticamente)
+
+Pero... Que es una branch? 
+  Una branch no es mas que una sucesion de commits encadenados.
+  Pero entonces... Que es un commit? 
+    Un commit es un snapshot del sistema de archivos versionados. Podes pensarlo como el estado del directorio de trabajo.
+    Yo trabajo en mi working directory. Agregar algun archivo al staging area hace que éste aparezca en el snapshot que se crea al commitear.(Expandir un poco mas en detalle)
+
+Como creo una nueva branch? 
+  $git branch <nombre>  
+  (esto no hace que yo este "parado" en esta branch)
+
+Como selecciono la branch en la cual estoy parado y a la cual commiteo? 
+  El puntero al último commit de mi branch actual se incrementa si commiteo algo nuevo. Para que el que se incremente apuntando a mi proximo commit sea otra branch tengo que hacer checkout de la branch en la que quiero trabajar.
+  $ git checkout <nombre de la branch>
+  Al hacer checkout el working directory se convierte en el snapshot de lo que habia en el commit al que apunta la branch a la que checkoutie.
+
+Merge: 
+Fast-Forward: 
+ Cuando queres mergear a una branch otra que es descendiente directo de la primera. Venia en una branch, cree otra a partir (parado en)  la original (&git checkout -b newBranch ) y comitie varias veces a esta nueva. No comitie nada en la original por lo que la nueva es descendiente directo de la original. 
+  Para lograr este merge te paras en la que queres avanzar(la original) y mergeas la nueva a la que estas parada. Esto va a agregar todos los commits de la nueva a la original y van a quedar como punteros apuntando a lo mismo.
+3-way:
+ Cuando los caminos de las branches que quiero merear se bifurcaron en algun punto. El merge agarra el commit de la bifurcacion y considera los cambios de las puntas de las branches con respecto a el commit en comun (un sistema de archivos que se modifico de dos maneras distintas. Supongo que para archivos diferentes no pasa nada (o sea los archivos que no existian en la que quiero como receptora del merge supongo que se agregaran y los que difieren seran mergeados como cualquier three way merge de archivos de texto )).
+  Este tipo de merge crea un nuevo commit cuyos padres son los ultimos commits de las 2 branches siendo mergeadas (confluyen las bifurcaciones en un commit que va a tener archivos de las 2 branches (por eso los punteros a los padres) y archivos nuevos (los que presentaron conflico o se mergearon (los que cambiaron y no estan en la original ni en la nueva))).
+(detalle, cuando hay conflicto, no se llega a crear el commit, queda el proceso pausado en el staging area (en este staging area estan todos los archivos del merge de las 2 branches menos los que entraron en conflicto).  '$git status' te da una lista de los archivos que quedaron sin stagear. El usuario tiene que ahora resolver los conflictos de los archivos que quedaron sin stagear y stagearlos y despues correr '$git commit' asi a secas, lo que completa el proceso de merge.)
+
+Tip: 
+  -Comando para agregar todo al staging area y commitear (que quiere decir todo? todo lo que esta en el woring directory?)
+  $git commit -a -m 'mensaje dummy' 
+  - Cuando haces un 3-way merge y surgen conflictos, si haces '$git mergetool' entonces se dispara el mergetool para los archivos en conflictos y cuando se retorna git te pregunta si el merge fue successfull y en caso afirmativativo te stagea los archivos mergeados. Igual tenes que commitear despues (creo) 
+  -Para ver las branches que hay '$git branch'
+
+
+Ojo: 
+  No te vayas(git no t eva a dejar) de una branch en la que no commiteaste todos los cambios que te interesa salvar, por que al irte de la branch se checkoutea otra y se pisa el working directory  
