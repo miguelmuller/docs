@@ -1,0 +1,35 @@
+\begin{document}
+
+
+\section{placa}
+
+Tiene q ser supported por la suite. Hay una lista del los chipset que son supported. (hay manufacturers y chipsets (lo que le meten adentro, que es lo que importa)
+
+Para encontrar el chipset q uso y checkear los drivers sigo esto (http://www.cyberciti.biz/faq/linux-find-wireless-driver-chipset/
+Basicamente: 
+  :~\$ lspci | grep -i wireless
+devuelve algo asi...: 02:00.0 Network controller: Atheros Communications Inc. AR9285 Wireless Network 
+
+\subsection{driver info}
+  :~\$ lspci -vv -s 02:00.0
+devuelve algo asi...
+02:00.0 Network controller: Atheros Communications Inc. AR9285 Wireless Network Adapter (PCI-Express) (rev 01)
+	Subsystem: Lenovo Device 30a1
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Latency: 0, Cache Line Size: 64 bytes
+	Interrupt: pin A routed to IRQ 17
+	Region 0: Memory at d0400000 (64-bit, non-prefetchable) [size=64K]
+	Capabilities: <access denied>
+	Kernel driver in use: ath9k
+	Kernel modules: ath9k
+Y dp tenes que hacer... 
+  :~\$ modinfo ath9k
+
+\subsection{vendor and product code}
+  :~\$ lspci -nn -s 02:00.0
+devuelve algo asi...
+
+
+\section{}
+

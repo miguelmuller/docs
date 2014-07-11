@@ -1,0 +1,514 @@
+1) Coneccion 
+
+En mi samsung advanced, hago settings->wireless and network->USB Utilities y le doy a la opcion : connect usb storage.
+Enchufo a la compu y el disco tendria que ser visible desde la compu.
+Puedo usar 
+$> dmesg para ver si hay entradas que den cuenta de que se conecto el disco
+
+$> sudo fdisk -l
+
+Te va a mostrar los discos fisicos conectados (como si se conectara con el hardware que hace de interfaz con los discos) (podria hacer tambien $>df -h , te da mas info)
+
+/dev/sda: 320.1GB es el disco local
+/dev/sdb: 4204MB sospecho que es el disco del telefono (voy a suponer que el tel tiene solo un disco) 
+
+fdisck -l muestra las particiones del disco tambien. 
+NO muestra particiones para el disco de android
+
+2) Imagen del disco (ver linux aprendizaje) 
+
+Hay que desmontarlo primero? por las dudas lo hago
+  
+$> dd if=dev/sdb of=backup.img bs=512 
+para ver el avanze
+
+$> pkill -USR1 -x dd  (le manda a todos los programas llamados dd la señal USR1 que hace que dd escupa en pantalla el status)
+(agrandar, con watch puedo hacer que cada tanto me actualize el estado $> watch )
+
+=>> Creo que todo lo anterior lo hice al pedo por que lo que copie es lo que el telefono sirve por MTP y no todas las particiones del disco del telefono que no son visibles desde afuera (no tengo acceso directo al disco por USB) 
+
+
+=================================================================================
+aca copio lo que esta en el documento en el docs al 11/07/14
+=================================================================================
+
+
+sigo con el proceso:
+
+bajo y corro one click root (esta poronga me instalo mucha mierda en el win7 (desinstaoar))
+bajo samsung kies 
+
+quiero tener el telefono rooteado para porder hacer un titnium backup o alguno que me aseguren que me sirve para recuperar mmi telefono en caso de problema.
+
+parto de aca:
+http://forum.xda-developers.com/showthread.php?t=2495800 
+(agrupa varios tutoriales)
+
+Me parece que rootearlo es distinto para JB que para GB entonces tengo un dilema por que voy a tener que rootear 2 veces . (si quiero hacer backup de la carpeta que tiene emfs (o como sea que se llame pero la que tiene el imai, etc de cosas que se pueden perder) tengo que rootear el GB y una vez rooteado puedo hacer el backup.
+
+aca dice como backupear efs y modemfs (necesita root (>adb shell  ;  adb>su ... )  
+http://forum.xda-developers.com/showthread.php?t=2342100
+parece que copia datos de block devices (dd if=/dev/block/mmcblk0p7 /sdcard/efs_backup.img .. . iy lo mismo para modemfs...)
+
+1. posible camino: te la jugas con el kies (no va, dice que no hay actualizaciones disponibles) 
+
+2. official  jb tutorial y probas instalando jb y despues rooteando (hay tut para eso en xda) y despues haciendo ( titanium o nandroid) backup. corres el riesgo de bardearla antes de llegar a jellybean (aunque si el jelly te lo actualiza kies y anda bien ahi ya estas tranquilo)
+
+en taringa recomiendan esta version del firmware : XXDLJ4 (reino unido)
+pero en sammobile (NAA hay una para argentina sin carriers, voy a usar esa)
+
+GT-S6810L  root (want it silent!)
+	Averiguando como hacer root para despues usar adb:
+(probar con framaroot http://forum.xda-developers.com/showthread.php?t=2534805
+Se puede hacer desde adb? (ojo en la pagina 5 dice que s6810p no funciona) 
+http://forum.xda-developers.com/apps/framaroot/framaroot-supported-devices-t2722980
+http://forum.xda-developers.com/showthread.php?t=2534805
+	http://forum.xda-developers.com/showthread.php?t=2495467 
+Pedido de rooteo...
+http://forum.xda-developers.com/showthread.php?t=2209794&page=6
+	(CWM6 (el recovery creo ) para GT-S6810L 
+Una posible solucion para el s6812 que no andaba...
+http://forum.xda-developers.com/showpost.php?p=43163569&postcount=7
+
+	Posteo del motochopper y su explicacion de funcionamiento (me preocupa la basura del motochopper)
+http://androidforums.com/galaxy-fame-all-things-root/740073-guide-how-root-galaxy-fame-windows.html	
+	
+	http://forum.xda-developers.com/showthread.php?p=48781713
+	
+	alternativa que flashea una rom deoxedeada(creo que no me sirve)
+http://forum.xda-developers.com/showthread.php?p=48781713	
+
+	exploits: 	
+	framroot 
+motochopper
+vroot
+http://vrootdownload.info/
+
+arquitectura Android:
+ 
+resumen de arquitectura Android: http://www.talkandroid.com/guides/beginner/android-rom-and-rooting-dictionary-for-beginners/
+
+aparentemente esta el bootloader que es como la bios de una desktop. Aca le tenes que decir que cargue tu recovery (que vendria a ser como un so en un pendrive o en un cd 
+solo que esta en otro lado (como el parted magic si se quiere))
+si logras cargar un recovery (Clockwork Mod Recovery) vas a tener un sistema operativo corriendo en el telefono que tenga acceso a todas las subparticiones 
+
+aca hay una linda explicacion de las particiones (por que no las veo desde afuera?) 
+que es lo que yo veo desde afuera?
+http://techblogon.com/android-file-system-structure-architecture-layout-details/
+y aca hay un thread explicando alguna que otra cosa (quizas pueda preguntar aca)
+http://forum.xda-developers.com/showthread.php?t=1959445
+Mas data, tutorial explicando como conseguir desde el telefono (con el “ssh” que hace el adb , como agregar programas que te permitan sacar en donde se monta cada particion) 
+http://forum.xda-developers.com/showthread.php?t=2450045
+recopilacion de tablas de particiones (no se si me sirve) 
+http://forum.xda-developers.com/showthread.php?t=1959445
+
+adb: 
+http://forum.xda-developers.com/showthread.php?t=1474956
+
+
+
+=> Pasos Actualizacion a JB (4.1.2): 
+1.  En windows 7 instalo kies (verifico que agarra mi cel) (tengo que poner solucionar prob de conexion) (no me hizo falta resstartear)
+2. Abro odin como administrador
+3. conecto el cel y cuando lo detecta cargo el ROM que me baje en el odin y ejecuto start
+
+Cuando termina le hecho un factory reset
+
+pattern unlock por las dudas (pin 1290)
+whatsapp (use el numero como aprendi para el cv +54 911 61406589)
+
+
+Como sigo? 
+
+rooteo. Necesito una sd card. (probar desde adb con framaroot?) 
+http://forum.xda-developers.com/showthread.php?t=2198341
+
+aparentemente hay varias maneras de flashear una ROM (o sea grabar un ROM en la particion SYSTEM) 
+	1- odin (entras en odin mode en el telefono y el tel espera recibir indicaciones via usb cable . El software que manda las instrucciones es odin y corre en windows (y ojo que probablemntte tengas que insalar kies antes (para que te instale los drivers para que windows reconozca el telefono))
+	2- grabas la ROM rooteada en la targeta sd y con el recovery del telefono (no se si depende de la version de android que tengas) podes flashear la nueva ROM
+1. Download the zip and place it in the root of your sd card.
+2. Reboot to the stock recovery. (volume up + home + power)
+3. Select install update from external storage.
+4. Select the root.zip file. 
+3- CWM. Es un recovery temporal con mas opciones que el recovery original. 
+...Etras en modo recovery  y flasheas la recovery partition ? para poner el recovery de clockworkMOD que te permite rootear el fono???
+	
+Pregunta importante : Que hace el root? por que aparentemente no modifica el hecho de que estas usando stock firmware (o sea el ROM de samsung)
+
+=> en teoria, rootear es tan sencillo como instalar el archivo de shaan en la sd y entrar en modo recovery y elegir la opcion update from external storage
+
+despues de esto deberia ver como hacer para conectarme via adb a el cel para hacer cosas en el cel una vez rooteado. 
+
+  
+
+
+
+mas adelante : 
+- conseguir una sd
+-probar si con el recovery no podes acceder a modificar el rom (supongo qu ela particion system) temporariamente (sin necesidad de root) 
+
+
+
+
+=================================================================================
+aca termina lo que copie del documento que esta en docs
+=================================================================================
+
+
+
+
+
+
+ADB (estsa en el sdk de android que necesita el jdk de java. Pero yo tengo el open jdk. veremos si anda)
+(based upon http://androidonlinux.wordpress.com/2013/05/12/setting-up-adb-on-linux/ )
+
+Corro el manager y agrego a android sdk tools,  "" "" platform tools
+hackeo el hard con: $>lsusb y veo el manufacturer y id de mi aparato como lo detecta el hw
+04e8:6860   (idVendor:idProduct)
+sudo vim /etc/udev/rules.d/51-android.rules
+aca pongo la data con este formato
+#x-x-x-x-x-x
+SUBSYSTEM=="usb", ATTR{idVendor}=="xxxx", ATTR{idProduct}=="xxxx", MODE="0666", GROUP="plugdev"
+
+depues ir a sdk/platform-tools y ejecutar 
+  # ./android update adb
+# cd ../platform-tools/
+# ./adb kill-server
+# sudo ./adb start-server
+
+despues vuelvo a /home/.android/ y edito el archivo adb_usb.ini (que se genera al actualizar )
+pongo 0xidVendor en una nueva linea
+
+Despues hago 
+sudo service udev restart
+./adb kill-server
+./adb start-server
+
+Como el device no aparecia despues de hacer el start-server (por que no habia activado el usb debugging mode ene l telefono)
+
+Segui las instrucciones extendidas 
+sudo cp /lib/udev/rules.d/40-usb_modeswitch.rules /etc/udev/rules.d/usb_modeswitch.rules
+sudo gedit /etc/udev/rules.d/usb_modeswitch.rules
+
+The last command will launch a text file with a lot of stuff in it. At the end of the text file, before the modeswitch_rules_end(podes buscar otros devices con el manufacturer id de samsung y poner este ahi) , add one more entry. The format of the entry is given below, you need to use the details of your phone.
+
+#x-x-x-x-x-x
+ATTR{idVendor}=="xxxx", ATTR{idProduct}=="xxxx", RUN+="usb_modeswitch '%b/%k'"
+
+Then run:
+
+$> sudo usb_modeswitch -v 0x1c9e -p 0x9e08 -S -R -W
+
+Replace my Manufacturer ID and Product ID with yours…
+
+$>sudo service udev restart
+$>./adb kill-server
+$>./adb start-server
+
+Ahora el linux ve mi device
+
+ADB (andorid debugging bridge)
+
+Ok yo ahora corro ./adb (programa cliente) 
+que le pide cosas al adb servidor que se comunica con los daemons en los telefonos (o emuladores)
+
+When you start an adb client, the client first checks whether there is an adb server process already running. If there isn't, it starts the server process. When the server starts, it binds to local TCP port 5037 and listens for commands sent from adb clients—all adb clients use port 5037 to communicate with the adb server.
+
+
+binario ./adb
+
+adb no es el shell. A adb le podes pedir un shell y te da como un ssh a el telefono y ahi podes correr los comandos de linux del telefono. 
+  O sea, llegaste al tan ansiado linux a travez de una cosa analoga a ssh y una cosa analoga a scp*
+  
+*adb tambien haria de scp (o como lo que hace teamviewer) ya que tiene otro comando que son push/pull  que vendrian a ser un scp en un sentido y en el otro mas comodos (vos tendrias que hacerte un script asi quizas para scp, que escriba en un directorio por defecto y lea de un directorio por defecto) 
+Ejemplos:
+ $>   adb pull <remote> <local>
+ $>   adb push <local> <remote>
+
+
+sus comandos pueden ser modificados para ser asignados a: el unico device (-d) , el unico emulador (-e) o el device de serial determinado ( -S <adb-serial>) 
+
+La forma de usarlo seria: 
+$> adb [-d|-e|-s <serialNumber>] <command>
+  y lo de seleccionar el objetivo es opcional si solo hay un device conectado
+
+Ojo con lo de port forward... Puede ser util:
+  adb forward tcp:6100 tcp:7100
+
+
+Lo que mas me importa de adb es el shell=> A ver como es linux debajo de android...
+
+
+
+Android/Linux
+
+  am:
+  esta el activity manager que deberias chusmear si queres hacer algo con alguna activity (miro para arriba desde abajo del agua)
+  pm: 
+  package manager
+      ej: $> adb shell pm uninstall com.example.MyApp  
+  sqlite3: 
+  parece que no requiere root y podes ver las bases de datos de los programas.  
+  
+Investigo un poco el SO:  (y segun las posibilidades que te da (a vos programador o hacker) ) 
+
+- con:
+  $> ls /system/bin 
+  puedo ver los comandos disponibles
+
+- dumpsys:	Dumps system data to the screen.	
+- dumpstate:	Dumps state to a file.
+- logcat: [option]... [filter-spec]...	Enables system and app logging and prints output to the screen.
+- dmesg:	Prints kernel debugging messages to the screen.
+- start:	Starts (restarts) an emulator/device instance.	 
+- stop:	Stops execution of an emulator/device instance.  
+  
+-  
+  
+Metodo manual de rootear. 
+http://www.equisoforum.com/Thread-ADB-Shell-Pro-Root-method
+
+Buscas el archivo root de esta pagina, segun modelo de tu procesador arm: http://androidsu.com/superuser/
+te baja un .apk (superuser) y un binario (su)
+y los poego en la carpeta platform-tools dentro del sdk de android
+desde esa carpeta corro adb...
+$>adb remount  (??? que hace)
+$>adb push su /system/bin   //todo esto es pear el binario y darle permiso ? puedo hacer esto con shell?
+$>adb push su /system/xbin
+$>adb shell chmod 4755 /system/bin/su
+$>adb shell chmod 4755 /system/xbin/su
+$>adb install Superuser.apk (?poor que instalo una app ? como funciona?)
+
+Bueno aca te explica como funciona superuser (quizas deberia saber como funcionan los de linux primero) 
+no entendi muy bien , al parecer el binario que copias (su) se habla con la aplicacion de android superuser
+que mantiene una base de datos.
+
+"In fact, without it, you don’t have a rooted device at all". Esto es un poco fuerte no? O sea yo agarro un device no rooted y puedo aplicar algun exploit que me permita crackearlo sin tu mugroso superuser
+
+
+parece que framaroot hace esto...
+
+LINUX
+
+Concepto de linux
+Superuser = es un usuario de un systema creado para hacer la administracion del sistema. Con este fin, no tiene restricciones del sistema de ningun tipo 
+apa!!! el root user tiene user ID = 0 (independientemente del nombre que tome que depende de la distro) 
+
+Para entender el core de linux!!
+http://en.wikipedia.org/wiki/Init
+
+todos los procesos son hijos de init 
+ojo, multiusuario asi que todos los procesos de todos los usuarios son hijos de init.
+y todos los procesos tienen un id y un id de usuario que lo llamo. Solo los procesos cuyo id de usuario es 0 
+(o sea los que son disparados por root) pueden cambiar su propio id de usuario. O sea que una vez que lo cambia no puede volver para atras.
+
+
++Mira la parte de operating system
+http://en.wikipedia.org/wiki/Executable
++Interfaz programa / SO 
+http://en.wikipedia.org/wiki/Application_binary_interface
++Sudo
+http://en.wikipedia.org/wiki/Su_(Unix)
++Sebang (#!/bin/sh) 
+( si ejecuto un script que tiene un shebang. Ejecutaria el archivo que tiene las instrucciones como si fuera un archivo binario pero NO, como hay un shebang en lugar de ejecutarse el archivo se ejecuta el binario cuya path esta en el shebang con el script como el primer argumento. Entonces es como si al ejecutar un script se ejecuta siempre por un interprete de comandos. (justamente por que el script esta escrito para ser interpretado asi))
+http://en.wikipedia.org/wiki/Shebang_(Unix)
++Jit compilation
+ (just in time)
+http://en.wikipedia.org/wiki/Just-in-time_compilation
++Bytecode
+(codigo que resulta de compilar un codigo (o sea, despues de hacer el analisis semantico y separar en tokens, etc. Pensa para lo siguiente en un lenguaje interpretado: Puede ser codigo para un interprete de bytecode que sea una vm o un programa. Es mas rapido interpretar bytecode que source code, por que esta un paso mas adelante en la cadena de interpretacion)
+http://en.wikipedia.org/wiki/Bytecode
++Machine code (lo que interpreta el cpu, es bytecode solo que no incluye los casos interpretados. Pensalo como bytecode nativo)
+http://en.wikipedia.org/wiki/Machine_code
++Microcode
+ (un nivel de abstraccion por debajo de las instrucciones del procesador (del asssembler)) 
+http://en.wikipedia.org/wiki/Microcode
++Virtual Console
+http://en.wikipedia.org/wiki/Virtual_console
+
+
+Sudo / Su
+Por que no se si tengo root en el shell de adb? 
+
+su: cambia el owner del login session
+
+sudo:  ejecuta un coomando como otro usuario (en este caso root?) pero te pregunta a vos TU password (hay un arhchivito sudoers que tiene la info de que usuario puede ejecutar que. (no es peligroso esto?)
+
+Estudiando 'su' me surge esta duda...
++virtual console: 
+  Son las tty? que se acceden haciendo Alt+F? (si estas en X usas Ctrl+Alt+F?)
+  Las virtual consoles son justamente eso, virtual consoles . Como si hubieran consolas enchufadas al equipo, tienen un archivo /dev/tty?.
+  Writing to the file displays text on the virtual console and reading from the file returns text the user writes to the virtual console.
+  The program startx starts the X Window System on a new virtual console. 
+  
+  Donde esta dicho en ubuntu (creo que basado en debian) como se inicializa cada tty? ?
+  Que son los runlevels (ver /etc/rc?.d/README es interesante) 
+  Si se paran todos los servicios se entra en single-user mode. Por que?  
+
+  El teclado por ejemplo tiene un device file en linux que le corresponde.
+  Linux muestra al teclado como un file. Y usa el contenido de este special file como entrada de teclado al sistema operativo. Pero el sistema operativo es el que interpreta el hardware entonces el sistema operativo interpreta el hardware, lo ingresa en el archivo y despues usa el archivo como ingreso de teclado al SO. O sea el sistema operativo ya sabe lo que ingreso al hw pero igual deja que se grabe en un archivo y lo lee de ahi (como si no lo hubiera visto recien).  
+ 
+Como lee el teclado un sistema operativo? 
+Posible lectura sobre este tema (no la vi) http://www.tldp.org/HOWTO/Keyboard-and-Console-HOWTO.html)
+
+Investigacion sobre el teclado que derivo en temas fundamentales de la organizacion de un SO:
+
+IOCTL  ...is a...
+  System calls    ...executed by os using...
+    Microcontrolador  ...uses...
+      ring security paradign   ...opposed to...
+        capability security paradigm        
+
+Capabilities security paradigm:
+  Although most operating systems implement a facility which resembles capabilities, they typically do not provide enough support to allow for the exchange of capabilities among possibly mutually untrusting entities to be the primary means of granting and distributing access rights throughout the system. A capability-based system, in contrast, is designed with that goal in mind.
+
+-Ring security parafigm:
+Explica mucho mas que solo ring (lee implementations)
+http://en.wikipedia.org/wiki/Ring_(computer_security)
+http://en.wikipedia.org/wiki/CPU_modes
+
+
+The hardware severely restricts the ways in which control can be passed from one ring to another, and also enforces restrictions on the types of memory access that can be performed across rings. Using x86 as an example, there is a special gate structure which is referenced by the call instruction that transfers control in a secure way towards predefined entry points in lower-level (more trusted) rings; this functions as a supervisor call in many operating systems that use the ring architecture. The hardware restrictions are designed to limit opportunities for accidental or malicious breaches of security. In addition, the most privileged ring may be given special capabilities, (such as real memory addressing that bypasses the virtual memory hardware).
+
+Linux implementa un supervisor/user-mode (un irng de 2 usuarios ) y desaprovecha los otros niveles del ring schema
+
+--A  nivel CPU:
+
+Supervisor mode es la hardware-mediated flag que sólo puede ser modificada por codigo que se ejecuta con la flag setteada (system-level software). 
+Y lo que limita esta flag es:
+   This flag determines whether it would be possible to execute machine code operations such as modifying registers for various descriptor tables, or performing operations such as disabling interrupts. (descripcion bien a bajo nivel)
+   
+Supervisor mode is “An execution mode on some processors which enables execution of all instructions, including privileged instructions. It may also give access to a different address space, to memory management hardware and to other peripherals. This is the mode in which the operating system usually runs.” 
+(o sea el sistema operativo corre asi, en el supervisor mode => cualquier programa que interactue con archivos, por ejemplo un editor de texto va a necesitar ejecutar codigo para escribir archivos y esto lo va a hacer a travez de sistem calls al sistema operativo. Estas system calls van a ser codigo que haga call instrucciones especificas del sistema pasando los parametros necesarios esperados por estas funciones del sistema)
+
+--A nivel sistema operativo (con una CPU que implementa un supervisor/user-mode):
+
+Linux and Windows are two operating systems that use supervisor/user-mode. To perform specialized functions, user-mode code(que se ejecuta en la CPU con supervisor mode no seteado) must perform a system call into supervisor mode or even to the kernel space where trusted code of the operating system will perform the needed task and return it back to user space.
+
+  Una estadistica interesante al respecto del switch (lo que seria la system call, por que siempre la hace el programa, el sistema operativo si necesita hacer algo asi no usa una call, lo hace directamente por que puede ejecutar su codigo como supervisor-mode.)
+  In most existing systems switching from “user mode” to “kernel mode” has a high cost in performance associated. It has been measured, on the basic request getpid, to cost 1000-1500 cycles on most machines. Of these just around 100 are for the actual switch (70 from user to kernel space, and 40 back), the rest is "kernel overhead".[9][10] In the L3 microkernel the minimization of this overhead reduced the overall cost to around 150 cycles.[9]
+
+Resumiendo: 
+
+Ultimately, the purpose of distinct operating modes for the CPU is to provide hardware protection against accidental or deliberate corruption of the system environment (and corresponding breaches of system security) by software. Only "trusted" portions of system software are allowed to execute in the unrestricted environment of kernel mode, and then only when absolutely necessary. All other software executes in one or more user modes. If a processor generates a fault or exception condition in a user mode, in most cases system stability is unaffected; if a processor generates a fault or exception condition in kernel mode, most operating systems will halt the system with an unrecoverable error. When a hierarchy of modes exists (ring-base security), faults and exceptions at one privilege level may destabilize only the higher-numbered privilege levels. Thus, a fault in Ring 0 (the kernel mode with the highest privilege) will crash the entire system, but a fault in Ring 2 will only affect rings 3 and beyond and Ring 2 itself, at most.[original research?]
+
+Transitions between modes are at the discretion of the executing thread when the transition is from a level of high privilege to one of low privilege (as from kernel to user modes), but transitions from lower to higher levels of privilege can take place only through secure, hardware-controlled "gates" that are traversed by executing special instructions or when external interrupts are received.[original research?]
+
+
+Anexo:
+Toca temas similares (los lei y estan todos piola)
+http://en.wikipedia.org/wiki/Executable
+http://en.wikipedia.org/wiki/System_call
+http://en.wikipedia.org/wiki/CPU_modes
+http://en.wikipedia.org/wiki/Application_binary_interface
+http://en.wikipedia.org/wiki/Machine_code
+http://en.wikipedia.org/wiki/Linux_Standard_Base
+<link a C standard library de wikipedia aqui>
+<link a C dynamic memory allocation de wikipedia aqui>
+<<
+link a linux kernel de wikipedia aqui> (y posterior analisis)
+
+Referencias (para aprender...)
+http://ineed.coffee/project/bd-shell
+
+
+
++Archivos ejecutables: (aca introduce a lo de shebang y a lo de btecode. Te dice que otros tipos de archivos ejecutables(que no tienen el formato binario esperado por el so) pueden ser considerados estos. ) 
+http://en.wikipedia.org/wiki/Executable
+  Los archivos ejecutables compilan codigo de maquina especifico para una determinada familia de procesadores y para un determinado sistema operativo (por al aplication binary interface * ) . 
+  Por esto es que el programa ejecutable que te bajas (o que queres copiar a una maquina desde otra) necesita estar compilado para una determinada familia de procesadores. 
+  El sistema operativo Linux determina si un archivo ses ejecutable si tiene formato de ejecutable y si tiene la flag (y el permiso) executable marcada.
+  Los ardchivos ejecutables son particulares para cada sistema operativo corriendo en cada arquitectura (en el caso mas comun es x_86).  
+  Hay herramientas que te permiten ejecutar en una maquina archivos ejecutables hechos para otra maquina (para otros instruction codes) 
+  Wine hace algo asi, implementa una aplication binary interface compatible con Win32. O sea. los programas se escriben haciendo uso de la libreria Win32 (libreria de system calls) (en realidad, linkeando contra la libreria Win32) 
+    Que hace wine, recibe system calls a la libreria binaria de aplicacion Win32 y los traduce a system calls del sistema operativo Linux en cuestion?
+     
+   
++*Aplication Binary interface: 
+  El compilador genera codigo que tiene por un lado codigo que se ejecuta en el CPU (si el sistema operativo es una plataforma para ejecutar programas entonces tiene sentido que lo que se pueda hacer sin ayuda se haga directamente en la CPU y no tenga que ser interpretado en tiempo de ejecucion) y codigo que se interpreta por el sistema operativo (las system calls creo que son una cosa asi). Es como una mezcla. Este formato es la aplication Binary Interface (creo)  
+  Paraece que todo pedido de hardware, incluyendo a el uso del procesador tiene que pasar a travez del so. 
+  
+  
++Linux Standard Base (LSB el de lsb_release -a)  
+  Justo lo que busca es una unica ABI para los Linux que adhieran (es una especificacion).
+  Entre otras cosas especifica la herarquia de archivos de linux LFH ( / /var /etc ...),
+  especifica librerias standard (cro que esto lo hace pposix);
+  Especifica posix ... POSIX: es un estándar pero que vendria a especificar la API y otras cosas (command shells and utility interface)
+   
+  El sistema operativo tiene un GNU C Library, y un kernel (o sea yo puedo escribir codigo y compilar codigo en C usando la C library (creo que tiene mas que la standart) (tenes un compilador que te traduce de codigo C (una convencion competamente general) a machine code. Ojo libreria C no es lo mismo que lenguage C.  
+  
++System call
+  
+  ejemplo de algo que se le puede pedir al kernel: 
+  Un interrupt pone al CPU en estado privilegiado y le pasa el control al kernel que decide que hacer con el interrupt. Si un programa le pidio al kernel ser avisado cuando hay un interrupt, el kernel decide si es lo mejor y lo hace si lo considera
+  
+  Lo que si o si puedo decir es que cuando yo escriba programas en c que hacen cosas como grabar archivos, etc (pedirle servicios al kernel) estoy haciendo system calls.
+   O sea el binario (con el formato especificado por el so) generado por el compilador tiene las system calls ahi metidas(en machine code? ejecutable por el CPU?).
+   Posibilidades: 
+     1) Ese binario puede estar incluyendo (si la libreria que se usa es estatica) codigo de alguna libreria ya compilada que es justamente la que hace las system calls. O sea, el sistema operativo tiene una libreria ya "compilada"; en realidad mapea los machine codes para hacer las system calls en machine code a funciones del lenguage c como si hubiera sido compilada con un compilador que sabe exactamente como hacer para traducir de c a binario de system calls. Se podria pensar como que tiene el codigo objeto linkeable de esas librerias. O sea que puedo usar esas librerias incluyendo las declaraciones (y no el actual code: there isnt any!) y al linkear tengo que linkear con la libreria (ver seccion C strandard library)
+     2) otra posibilidad es que no hay nada precompilado y el compilador sabe como traducir de system calls a codigo binario de system calls. El asunto es como se compila la libreria que interactua con el so (la que proporciona el so). Esta libreria va a tener en lenguage c , wrappers de las system calls. O sea funciones que toman argumentos y en base a esos argumentos ejecutan una accion en el kernel (y obtienen o no resultados) El compilador podria llegar a saber cuando aparece una function call como escribirla en binario (esto no es equivalente a tener el codigo compilado?)  (Ver seccion CStandard library) 
+  
++C standard library 
+<>
+  engloba: utilidades para manejar strings, computos matematicos, y servicios que se le piden al SO (i/o, memory allocation, etc)
+  Son librerias escritas en C tambien? como hacen las system calls? (i.g:
+  Son 29 header files
+  Modificaciones (adregado de header files): 
+    1995 (NA1): iso646.h, wchar.h, wctype.h 
+    1999 (C99): complex.h, cenv.h , inttypes.h, stdbool.h, stdint.h, tgmath.h
+    2011 (C11): stdalign.h, stdatomic.h, stdnoreturn.h, threads.h uchar.h
+  ejemplo de un header file: 
+    <stdlib.h>: tiene memory allocation functions (malloc,calloc,realloc,
+  La API son los header files. (data type definitions, funtion declarations y macros(?))
+  
+  Los sistemas Unix (como lo es linux y sus distros) tienen (y la consideran como parte del sistema operativo) una C library compilada. Esta en formato shared library, es decir, el codigo binario (binario para un so) no se copia en cada ejecutable binario que se compila sino que se "linkea en tiempo de ejecucion" a este archivo). 
+  En teoria el sistema operativo no va a funcionar bien si elimino la shared library de C. 
+  
+  
+  
+  
+   
+  
+
+  ++ glibc:
+    Es la implementacion GNU de la C standard librarcy  
+
+
+
+
+
+
+
+
+posible hack, hacer que el linux piense que sos adb (aparentemente adb puede hacer muchas cosas) 
+mandando datos de tipo adb al servidor que los lee. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+recordar instalar: 
+
+  automatic call recorder
+  audio manager (kjeje)
+  pray
+  suppaplex 
+  smash hit
+  silent recordes
+  teamviewer
+  
+  status:
+  ver el drive (ahi pase varias cosas (notas (no todas, faltand las del audio manager) las llamadas que me parecia guardar del automatic call recorder)) Van a etar repartidas entre el drive y la carpeta /iso/backup... (dusca ahi)
+  No olvidar de grabar las cosas en el 
+  no olvidar los sounds (quiero bajar con el kies pero no me agarra el java que necesita) Los podria copiar a mano.
+  Proximo paso connect usb storage y bajar los sonidos y las cosas de el audio mansger(ver como hacer esto)
+  

@@ -1,0 +1,442 @@
+﻿1. Write a function which takes an integer and returns if it is even or odd; 
+
+
+bool even(int a)
+{
+        return (a%2 == 0) ;
+}
+
+
+Preguntas que surgieron al tratar de resolver:
+
+
+- vale hacer:    return !(a%2);  ?  (si el resultado de a%2 es casteado a bool antes de ser aplicado el ! => si vale)
+- el cero es par
+
+
+
+
+2. Implement the spiral traversal of a 2-dimensinal matrix. For example, given matrix a[3][3], output would be a[0][0], a[0][1], a[0][2], a[1][2], a[1][1], a[1][0], a[2][0], a[2][1], a[2][2]; 
+
+
+void traverse(T ** a , I,J )
+{
+        int i,j;
+
+
+        for(i=0;i<J;i++)
+                if(even(i))
+                        for(j=0;j<J;j++)
+                                std::cout << a[i][j];
+                else
+                        for(j=0;j<J;j++)        
+                                std::cout << a[i][(J-1)-j];
+}
+
+
+Preguntas que surgieron al tratar de resolver:
+
+
+- Esta bien asumir q tengo recibo las dimensiones de la matriz como parametro ? 
+- Esta bien asumir q la matriz es de datos de tipo T que tienen ya sobrecargado el operador<<
+- creo q se podia declarar el int i = 0 adentro del for (checkear)
+
+
+
+
+3. Print out a Fibonacci array given the first two elements f[0]=0, f[1]=1; 
+
+
+void fibonacci(int len)
+{
+        fib(0,1,1,len);
+        cout << 0 << '\n' ; 
+}
+
+
+fib(int a, int b,int count, len)
+{
+        if(count >= len)
+                return;
+        fib(b, a+b, ++count, len)
+                cout << b << '\n';        
+}
+
+
+Preguntas que surgieron al tratar de resolver:
+
+
+- Imprimir hasta donde , en que orden, esta bien tomar la longitud de la cadena como argumento? 
+- Es lo que se espera devolver el array por std out separada por espacios?
+- Version no recursiva
+
+
+void fibonacci(int len)
+{
+        
+        int fprev = 0;
+        int fcurr = 1;
+        int i;
+        cout << fold << '\n' << fnew << '\n' ; 
+
+
+        for(i=0;i < len-2;i++)
+        {
+                aux = fcurr + fprev ;
+                fprev = fcurr;
+                fcurr = aux;
+                cout << fcurr << '\n' ; 
+        }
+}
+
+
+
+
+4. Given an integer, write a function to tell us if it is a prime or not.
+
+
+bool prime(int a)
+{
+        int i;
+        for( i = 2 ; i<= a/2 ; i++)
+        {
+                if( a%i == 0)
+                        return false;
+        }
+        return true;
+}
+
+
+Preguntas que surgieron al tratar de resolver:
+
+
+- Este es un problema q seguro es muy estudiado, supongo q debe haber una solucion mas optima 
+
+
+
+
+5.      Reverse a string; 
+
+
+void revert(char * str, int len)
+{
+        int i;
+        char aux;
+        for(i= 0 ; i < len/2; i++)
+        {
+                aux = str[i];
+                str[i] = str[(len-1)-i];
+                str[(len-1)-i] = aux;
+        }
+
+
+
+
+}
+
+
+Preguntas que surgieron al tratar de resolver:
+
+
+- No sabia si tenia que usar floor en la condicion del for ( no hace falta por que len es entero entonces len/2 es division entera y trunca el resultado ) 
+Esto era importante por que yo quiero hacer el swap hasta el len/2 - esimo elemento si len es par y hasta el anterior al del medio si es impar  
+(len = 5 ejemplo arbol quiero intercambiar hasta el elemento str[1] inclusive. En este caso 5/2 = 2 y voy a intercambiar
+hasta el primer elemento (por que la condicion es menor estricto ))
+
+
+- otra version podria ser: 
+
+
+void revert(std::string & str)
+{
+        int i;
+        char aux;
+//        std::string::iterator iter = // como era la declaracion para iteradores?
+        for(i=0; i < str.size() ; i++)
+        { // creo que vale tratar a los strings asi como arrays
+                aux = str[i];
+                str[i] = str[(len-1)-i];
+                str[(len-1)-i] = aux;
+        }
+}
+
+
+
+
+6. Given a string and a delimiter, write code to split this string based on the delimiter; 
+
+
+// devuelve la segunda parte de la cadena por valor . null si no encuentra el delimitador
+char * splitstr(char * str , char delimiter, int len)
+{
+        int i;
+        for(i = 0 ; i< len ; i++)
+        {
+                if(str[i] == '\0')
+                        cout << "found end of string before delimiter" << '\n' ;
+                        return NULL;
+                if(str[i] == delimiter )
+                {
+                        str[i]= '\0';
+                        if(str[len] != '\0') // pongo un '\0' al final si este no esta
+                        {
+                                str[len] = '\0';                
+                        }
+                        return  &str[i+1];
+                }         
+        }
+        return NULL;
+}
+
+
+// devuelve la segunda parte de la cadena por parametro (no le tengo tanta confianza, probar) 
+int splitstr(char * str , char ** new_str ,char delimiter, int len)
+{
+        int i;
+        for(i = 0 ; i< len ; i++)
+        {
+                if(str[i] == '\0')
+                        cout << "found end of string before delimiter" << '\n' ;
+                        return -1;
+                if(str[i] == delimiter )
+                {
+                        str[i]= '\0';
+                        if(str[len] != '\0')
+                        {
+                                str[len] = '\0';
+                        }
+                        *(new_str)= &str[i+1];                
+                }         
+        }
+        return -1;
+}
+
+
+Preguntas que surgieron al tratar de resolver:
+
+
+- esta bien en este tipo de ejercicios imprimir mensajes asi a stdout ? 
+- esta bien asumiir q son strings pelados de c? y recibir el tamañño como argumento.
+- es mejor el segundo o el primer approach? o es preferible un tercero del tipo:
+
+
+std::string splitstr(std::string & str, char delimiter)
+{
+        std::string::iterator iter;
+        for(iter = str.begin(); iter != str.end() ; iter++ )
+        {
+                if((*iter) == delimiter ) 
+                        // no se como se opera con estos strings                                
+        }
+}
+
+
+
+
+7. What is a binary search tree, what is a balanced binary search tree? Given an integer BST and a number, write code to search this integer in this tree; 
+
+
+BST can be understood as a key and up to two subtrees that are themselves binary search trees. The left subtree must have a 
+key thats smaller than that of the tree we are defining and the right subtrees key must be larger.
+
+
+An advantage of such data types is that searching can be done efficiently ( O(log2(n)) for balanced trees )they can be implemented as linked structures so 
+insertion can be also very effective.
+a balanced tree is one in wich the difference between the amount of levels of two subtrees of a particular tree is restricted.
+the idea is to limit the total amount of levels of the tree 
+
+
+bin_tree * bin_search(bin_tree * T, int key)
+{
+        if( key < T->key && T->left)
+                return = bin_search(T->left,key);
+        else if(key > T->key && T->right)
+                return = bin_search(T->right,key);
+        else if( key == T->key)
+                return T;
+        else 
+                return NULL;        
+}
+
+
+
+
+8. Given a binary search tree and two nodes, returns their lowest common ancestor (LCA);
+
+
+bin_tree * LCA(bin_tree * T , bin_tree * node_a, bin_tree * node_b)
+{
+        if(node_a->key > T->key && node_b->key > T->key)
+                return LCA(T->right,node_a,node_b);
+        else if(node_a->key < T->key && node_b->key < T->key)
+                return LCA(T->left,node_a,node_b);
+        else if(bin_search(T,node_a->key) != NULL && bin_search(T,node_b->key) != NULL )
+                return T;
+}
+
+
+
+
+9.      Write a function to reverse a single linked list; 
+
+
+void revert(sl_list & l)
+{
+        node * current = l.first_node;
+        node * previous = NULL;
+        
+        if(current == NULL) // empty list
+                return;         
+        while(current->next != NULL)
+        {
+                next = current->next;
+                
+                current->next = previous;
+                
+                previous = current;
+                current = next;
+        }        
+        l.first_node = current;
+        current->next = previous;
+}
+
+
+
+
+10.    Given a double linked list, write functions to insert and delete nodes in this list; 
+
+
+// I assume that the list is ordered and we want to insert a node created after a key
+node * insert(dl_list & l, key k)
+{
+        current = l.first_node;
+        if(current == NULL) //emty list
+        {
+                node * new_node = new node(key);
+                new_node->previous = NULL;
+                new_node->next = NULL;
+                l.first_node = new_node ;
+                return new_node;                        
+        }
+        while(current->next != NULL && current->key <= key)
+                current = current->next;
+        if(current.key > key)  
+        {
+                node * new_node = new node(key);
+                new_node->next = current;
+                new_node->previous = current->previous;
+                current->previous->next = new_node;
+                current->previous = new_node;
+            return new_node;
+        }        
+        if(current->next == NULL) // insert in the end
+        {
+                node * new_node = new node(key);
+                new_node->next = NULL;
+                new_node->previous = current;
+                current->next = new_node;
+                return new_node;
+        }
+}
+
+
+bool delete_node(list l , key k)
+{
+        node * current = l.first_node;
+        if(current == NULL) // empty list
+        {
+                return        false;
+        }
+        while(current->next != NULL && current->key != key)
+                current = current->next;
+        if(current->key == key);
+        {
+                current->previous->next = current->next; 
+                if(current->next != NULL)                
+                        current->next->previous = current->previous;
+                delete current;
+                return true;                                                        
+        }                                                
+                
+}
+
+
+C++ Polimorfismo:
+
+Los mensajes a objetos se pueden interpretar (si fuera C) como q de fondo se esta llamando a una funcion y pasando los argumentos 
+que se le pasan al metodo + un puntero a la instancia del struct que tiene los datos del objeto que se esta mensajeando. (creo que puedo
+pensar a una clase en c++ como una instancia de una variable struct de c)
+
+ie , asi lo entiendo yo, no se si esta bien..
+
+class A
+{
+public:
+  void fiddle(arg1,arg2);
+private:
+  int attr1;
+  B attr2; // B es el nombre de otra clase
+}
+
+// Lo que yo propongo es que hacer ...
+
+A instA;
+instA.fiddle(arg1,arg2)
+
+// es equivalente a lo que en C era ...
+
+A instA
+fiddle(&instA,arg1,arg2);
+
+tanto en c como en c++ necesito de un objeto de clase A para fiddle. 
+en c++ podes pensar a fiddle como una funcion de c pero q toma 3 argumentos.(de hecho , copia en el stack la variable instA, y esta esta disponible para fiddle())
+esta sintaxis agrega A:: a cada funcion de estas q toma 3 argumentos, para no confundirlas con las funciones de otras clases. (e smuy probable 
+que muchas se llamen igual si no fuera el caso) 
+
+o sea, si lo pienso no creo q esto agregue espacio al objeto instanciado de la clase A por q a diferencia de los miembros q son data, las 
+funciones miembro van a valer para todos los objetos de una clase lo mismo(la misma direccion de memoria) ,  por eso es mas como q de 
+la manera c++ de escribir la case, se puede interpretar como la estructura de c + funciones q operan sobre el tipo de dato A que viven 
+afuera de la clase y se llaman asi: "A::<funcion>()" 
+
+nota: "But because the C++ compiler had to generate C, you know that there must be some way to represent C++ syntax in C (some compilers still allow you to produce C code)."
+
+
+
+
+
+
+
+en c (early biinding) si yo pasaba un struct se checkeaba q el prototipo de la funcion q se este llamando reciba ese tipo de puntero
+a struct.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Puntero a void:
+
+Se usa cuando queres tener un puntero a algo cuyo tamaño no conoces. 
+(ver ppio de A tiny C-like library)
+
+mira la interfaz de :
+
+-int add(CStash* s, const void* element);
+-void* fetch(CStash* s, int index)
+
+fijate como esta libreria esta hecha para trabajar con elementos de cualquier tamaño (se setea este tamaño al ppio) 
+y despues recibe puntero a void (yo le paso un puntero a mi tipo de dato pero se castea a puntero a void en la funcion para 
+evidenciar q el taaño de lo q tengo q copiar lo define la propiedad size del struct q yo le pase)
+y como devuelve un puntero a void tambien que dp se casteara al tipo de dato que corresponda
+
+
+
+

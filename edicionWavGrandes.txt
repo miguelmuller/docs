@@ -1,0 +1,10 @@
+EDIT: Ver sox !!! lo haces mas facil
+
+1) Abrir con el audacity. 
+2) seleccionar hasta 12 horas (dp falla) (por ahi no es por las horas, verificar ) 
+3) que te labelee automaticamente cada una hora (selecciona que use numero de labels y una cantidad acorde)
+4) usar la herramienta * para seleccionar el cacho a grabar (cuando ves la flechita le das doble click)
+
+5a) File -> exportSelection -> grabar como .mp3 con el titulo *hr  
+
+5b) Edit -> Clip boundaries -> split new

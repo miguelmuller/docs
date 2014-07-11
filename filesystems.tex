@@ -1,0 +1,38 @@
+\begin{document}
+
+\section{Leyendo de wikipedia}
+
+\subsection{Links:}
+
+http://en.wikipedia.org/wiki/Block_(data_storage)
+http://en.wikipedia.org/wiki/File_system
+
+\subsection{Encuentro particularmente interesante esto:}
+\begin{itemize}
+\item
+Block:
+A block is a sequence of bytes or bits, having a nominal length (a block size)
+Most file systems are based on a block device, which is a level of abstraction for the hardware responsible for storing and retrieving specified blocks of data
+The block size in file systems may be a multiple of the physical block size
+(de el articulo de sector de wikipedia)
+Early in the computing industry, the term "block" was loosely used to refer to a small chunk of data. Later the term referring to the data area was replaced by sector, and block became associated with the data packets that are passed in various sizes by different types of data streams(analogo a los que viajan por el aire por wifi). For example, the Unix program dd allows one to set the block size to be used during execution with the parameter bs=bytes!!! This specifies the size of the chunks of data as delivered by dd, and does not affect the size of the sectors used by the medium to which the data is stored.
+\item
+FileSystem:
+A file system (or filesystem) is an abstraction to store, retrieve and update a set of files. The term also identifies the data structures specified by some of those abstractions, which are designed to organize multiple files as a single stream of bytes, and the network protocols specified by some other of those abstractions, which are designed to allow files on a remote machine to be accessed.
+
+\begin{itemize}
+
+\section{Mi entendimiento}
+
+\subsection{block device}
+El disco fisico tiene un sector size (que antes se lo llamaba block), que no es necesariamente el block size del block device. El block device es una abstraccion que se toma para asumir que yo puedo escribir blocks y me olvido de como esta implementado eso fisicamente. O sea, lo puedo pensar como una interfaz que puede recibir blocks de datos y devolverme blocks de datos (supongo q le puedo pedir un block por numero de block)
+
+\subsection{filesystem}
+Esto corre encima de un block device (hace uso de esa interfaz q describimos anteriormente) y es una abstraccion para grabar y acceder archivos. Que es un archivo? en ppio un chunk de informacion, o una linda manera de verlo es que es un recurso que se le da a un programa para almacenar informacion duradera.
+Estas abstracciones especifican estructuras de datos eficientes para el manejo de este tipo de informacion y las interfazes para acceder a archivos a travez de una red.
+
+
+mas:  ver linux aprendizaje para agregados y pruebas de como crear un block device y hacerle un filesystem con dd 
+
+ 
+

@@ -1,0 +1,13 @@
+record audio
+
+http://jordilin.wordpress.com/2006/07/28/howto-recording-audio-from-the-command-line/
+
+por alguna razon el lame con el mp3 no andan en mi compu entonces 
+uso ogg
+
+arecord --quiet -f cd -d 3600 -t raw | oggenc --quiet - -r -q -1 -o out.ogg
+
+para suspender automaticamente:
+
+sudo rtcwake -u -s 10 -m mem (suspende por un tiempo de 10 segundos y dp reanuda...
+

@@ -1,0 +1,28 @@
+LINUX INSTALLATION
+
+1.En /usr/local estarían los programas que no son parte de ubuntu (supongo los que no tienen packetes, que vienen listos para ubuntu y se pueden backupear con el metodo de abajo) 
+
+2.En /etc/ tengo archivos de configuración. Ahi por ejemplo estan todos los archivos de configuración de apache2 o sea que estaría bueno tenerlo en otro disco también.
+
+3.En /var hay logs (podria no importarme) y en /var/www estan los archivos o links a directorios de las paginas q sirve el apache
+
+
+-Para recordar los packetes instalados usando apt-get...
+
+ $> dpkg --get-selections > ~/my-packages
+
+-Para recordar las sources(de donde trae los packetes) tengo que backupear: /etc/apt/sources.list y /etc/apt/sources.list.d
+
+-reinstalo ubuntu (/)	
+
+-Devuelvo los sources.list y sources.list.d a sus directorios y corro 
+
+  $> sudo apt-get update
+
+-Reinstalo los packetes que tenia en el sistema anterior
+
+ $> dpkg --set-selecctions < ~/my-packages && sudo apt-get dselect-upgrade
+
+
+ 
+
