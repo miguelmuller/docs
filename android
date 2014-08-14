@@ -110,7 +110,9 @@ http://forum.xda-developers.com/showthread.php?t=1474956
 => Pasos Actualizacion a JB (4.1.2): 
 1.  En windows 7 instalo kies (verifico que agarra mi cel) (tengo que poner solucionar prob de conexion) (no me hizo falta resstartear)
 2. Abro odin como administrador
-3. conecto el cel y cuando lo detecta cargo el ROM que me baje en el odin y ejecuto start
+3. conecto el cel y cuando lo detecta cargo el ROM* que me baje en el odin y ejecuto start 
+*ROM = ARO-I9070UBLPH-20130808091536.zip (revision: 1222596) Lo baje de samsung-updates.com
+pero me parece que hay una mas nueva (una de 2014)
 
 Cuando termina le hecho un factory reset
 
@@ -120,12 +122,12 @@ whatsapp (use el numero como aprendi para el cv +54 911 61406589)
 
 Como sigo? 
 
-rooteo. Necesito una sd card. (probar desde adb con framaroot?) 
+Rooteo. Necesito una sd card. (probar desde adb con framaroot?) 
 http://forum.xda-developers.com/showthread.php?t=2198341
 
 aparentemente hay varias maneras de flashear una ROM (o sea grabar un ROM en la particion SYSTEM) 
 	1- odin (entras en odin mode en el telefono y el tel espera recibir indicaciones via usb cable . El software que manda las instrucciones es odin y corre en windows (y ojo que probablemntte tengas que insalar kies antes (para que te instale los drivers para que windows reconozca el telefono))
-	2- grabas la ROM rooteada en la targeta sd y con el recovery del telefono (no se si depende de la version de android que tengas) podes flashear la nueva ROM
+	2- grabas la ROM rooteada en la targeta sd y con el recovery del telefono (no se si depende de la version de android que tengas. Depende del recovery creo, algunos permiten flashear desde la sd) podes flashear la nueva ROM
 1. Download the zip and place it in the root of your sd card.
 2. Reboot to the stock recovery. (volume up + home + power)
 3. Select install update from external storage.
@@ -144,7 +146,7 @@ despues de esto deberia ver como hacer para conectarme via adb a el cel para hac
 
 
 mas adelante : 
-- conseguir una sd
+- conseguir una sd (DONE)
 -probar si con el recovery no podes acceder a modificar el rom (supongo qu ela particion system) temporariamente (sin necesidad de root) 
 
 
@@ -156,8 +158,24 @@ aca termina lo que copie del documento que esta en docs
 
 
 
+STATUS:
+Tengo el telefono rooteado 
+segui estas instrucciones hasta el paso 6 (solo el root): 
+http://forum.xda-developers.com/showthread.php?t=2198341
+No se bien que papel cumple el recovery o el temporary recovery (sera para instalar la custom ROM? (os sin el kernel que creo que esta en otra particion)) pero aca a continuacion pongo link al mas popular para el cel mio
+http://forum.xda-developers.com/showthread.php?t=2190211
+http://forum.xda-developers.com/showthread.php?t=1987313
+
+Estoy barajando conseguir el root por otro lado. (Copiando (me va a dejar adb?) el binario su e instalando la aplicaicion SuperSU) 
+Rebootear el telefono al rom de stock que te bajaste (sin el root) a ver si consigo que ande bien la sim card que ahora crashea todo el tiempo y despues re rootea. 
+Metodos de rooteo: 
+   -Proba de copiar los binarios (ej http://www.pocketables.com/2011/06/how-to-manually-root-almost-any-android-device.html)
+   -framaroot (http://framaroot.net/faq.html)
+   -vroot
+en el fame: motochopper
 
 
+Pruebo mi root: 
 
 ADB (estsa en el sdk de android que necesita el jdk de java. Pero yo tengo el open jdk. veremos si anda)
 (based upon http://androidonlinux.wordpress.com/2013/05/12/setting-up-adb-on-linux/ )
@@ -288,11 +306,14 @@ que mantiene una base de datos.
 
 parece que framaroot hace esto...
 
+
 LINUX
 
 Concepto de linux
 Superuser = es un usuario de un systema creado para hacer la administracion del sistema. Con este fin, no tiene restricciones del sistema de ningun tipo 
 apa!!! el root user tiene user ID = 0 (independientemente del nombre que tome que depende de la distro) 
+Ojo, el super user (aka root) tambien tiene que hacer system calls para hacer cosas sensitivas que hace el kernel y nadie mas. 
+
 
 Para entender el core de linux!!
 http://en.wikipedia.org/wiki/Init
@@ -355,7 +376,7 @@ Investigacion sobre el teclado que derivo en temas fundamentales de la organizac
 
 IOCTL  ...is a...
   System calls    ...executed by os using...
-    Microcontrolador  ...uses...
+    Microcontrolador (CPU)  ...uses...
       ring security paradign   ...opposed to...
         capability security paradigm        
 
@@ -399,19 +420,34 @@ Anexo:
 Toca temas similares (los lei y estan todos piola)
 http://en.wikipedia.org/wiki/Executable
 http://en.wikipedia.org/wiki/System_call
-http://en.wikipedia.org/wiki/CPU_modes
+http://en.wikipedia.org/wiki/CPU_modes (they enforce the security via hardware restriction. No one but the operating system can perform certain tasks, access certain memories, etc...)
 http://en.wikipedia.org/wiki/Application_binary_interface
 http://en.wikipedia.org/wiki/Machine_code
-http://en.wikipedia.org/wiki/Linux_Standard_Base
+http://en.wikipedia.org/wiki/Linux_Standard_Base (esfuerzos para unificar la ABI en distintos sistemas operativos linux) 
 <link a C standard library de wikipedia aqui>
 <link a C dynamic memory allocation de wikipedia aqui>
-<<
-link a linux kernel de wikipedia aqui> (y posterior analisis)
+<link a linux kernel de wikipedia aqui> (y posterior analisis)
+http://en.wikipedia.org/wiki/Calling_convention
+http://en.wikipedia.org/wiki/Loader_(computing)
++Primary_storage
+ (mirar el dibujito Hierarchy of memory (los registers estan como adentro del CPU)) La main memory es directamente leida por el CPU (creo que esto quiere decir a donde puede apuntar el stack pointer)
+Otra cosa clave es que la main memory es RAM (volatil, no retiene su valor al ser desconectada). 
+En realidad hay 3 tipos de memorias a las que la CPU accede (lee y escribe de) estas son : 
+  1) los registros
+  2) la memoria cache (una memoria de rapido acceso que trae el CPU, esta entre los registros y la )
+  3) la memoria primaria (ram)  
+http://en.wikipedia.org/wiki/Main_memory#Primary_storage 
+http://en.wikipedia.org/wiki/Exec_(operating_system)
++IOCTL. Es la página de una system call (generica para varios SO ) El chiste es que explica por que los kernel modules son extensibles. El que se comunica con los perifericos es exclusivamente el kernel => para poder utilizar algun feature de algun periferico que no halla sido planeado de antemano por los diseñadores del kernel (que no tienen por que saber que se le va a ocurrir al fabricante del peripherial) existe el tema de extender el kernel con modulos. Claro esto te da otro control de la maquina. Podes ejecutar codigo mas privilegiado siendo el kernel.
+http://en.wikipedia.org/wiki/Ioctl 
+
 
 Referencias (para aprender...)
 http://ineed.coffee/project/bd-shell
 
 
+
+LO QUE SIGUE LO ESCRIBI SIN ENTENDER BIEN DEL TODO COMO FUNCIONA UNA SYSTEM CALL. AHORA ENTENDI Y PODES VER A PARTIR DE ULTIMO MOMENTO PRIMERO PARA ENTENDER QUE QUERIAS DECIR ACA. LA MAYORIA DE LAS COSAS VAN A SER INTERESANTES IGUAL Y LES VAS A SACAR MAS JUGO VIENDO LO DE LAS SYSTEM CALLS PRIMERO.
 
 +Archivos ejecutables: (aca introduce a lo de shebang y a lo de btecode. Te dice que otros tipos de archivos ejecutables(que no tienen el formato binario esperado por el so) pueden ser considerados estos. ) 
 http://en.wikipedia.org/wiki/Executable
@@ -425,9 +461,43 @@ http://en.wikipedia.org/wiki/Executable
      
    
 +*Aplication Binary interface: 
-  El compilador genera codigo que tiene por un lado codigo que se ejecuta en el CPU (si el sistema operativo es una plataforma para ejecutar programas entonces tiene sentido que lo que se pueda hacer sin ayuda se haga directamente en la CPU y no tenga que ser interpretado en tiempo de ejecucion) y codigo que se interpreta por el sistema operativo (las system calls creo que son una cosa asi). Es como una mezcla. Este formato es la aplication Binary Interface (creo)  
-  Paraece que todo pedido de hardware, incluyendo a el uso del procesador tiene que pasar a travez del so. 
+  El compilador genera codigo que tiene por un lado codigo que se ejecuta en el CPU (si el sistema operativo es una plataforma para ejecutar programas entonces tiene sentido que lo que se pueda hacer sin ayuda se haga directamente en la CPU y no tenga que ser interpretado en tiempo de ejecucion) y codigo que se interpreta por el sistema operativo (las system calls creo que son una cosa asi). Es como una mezcla. Este formato es la aplication Binary Interface (creo)
+   (! esto es lo que esta mas o menos, yo aca adivinaba que el so interpretaba lo que hay en el binario (este codigo maquina) y no es asi. Este codigo maquina se ejecuta y cuando en el codigo se llama a una funcion de C que necesita hacer system calls, esta funcion de C va a llamar a un wrapper escita en C de la system call, que no es mas que una funcion que sabe de donde levantar los argumentos (y en que orden) a donde escriben los return values los procedimientos correspondientes a las system calls que estan en el kernel (en el espacio de memoria primaria privilegiada que puede ejecutar cualquier instruccion (y no estan limitadas)). Que necesita saber el programador de una wrapper de la system call (del procedimiento en el kernel) para poder escribir el cordigo? facil, la direccion de memoria en donde esta el procedimiento y las direcciones de memoria (constantes arbitrarias) de donde se escriben y levantan los argumentos. Entonces suponete que tenes:
+   
+    #define SYSCALLN_1_ARG_ADD 0x404400 
+    #define SYSCALLN_2_ARG_ADD 0x404401
+    #define SYSCALLN_ADD       0x407804
+    #define SYSCALLN_RET_ADD   0x404402
+         
+    int syscall1(int arg1,int arg2)
+    {
+        int * p1,p2,pr;
+        p1 = SYSCALLN_1_ARG_ADD;
+        p2 = SYSCALLN_2_ARG_ADD;
+        pr= SYSCALLN_RET_ADD;
+        
+        *p1 = arg1;
+        *p2 = arg2;
+        
+        call(SYSCALLN_ADD) // Ojo, esta es otra wrapper a una system call. Como se codea este wrapper?* 
+        
+        return *pr;
+     } 
+   
+   *en lugar de hacer el call probablemente se haga un assembler embebido (es decir que aparece asi como esta en el codigo maquina. El que lo codee necesitara saber el coddigo binario de la instruccion call y donde se guarda el argumento (notese que no se si tiene return value, creo que no)  Despues de las instrucciones correspondientes a las asignaiones de direcciones a los punteros. 
+
+   Basicamente, lo que cambia con la plataforma es o el mapeo de las sistem calls y sus argumentos (y que system calls en particular) o las instrucciones de la CPU. O sea, el codigo compilado (codigo maquina) llama a instrucciones del CPU y llama a subrutinas del sistema operativo cuando necesita hacer cosas que el codigo no privilegiado puede hacer (codigos de instrucciones que solo el codigo que esta en el kernel puede ejecutar). El sistema operativo provee al fabricante de compiladores (o al usuario desarrollador) una especificacion con sus system calls
+   
+     Esta system call wrapper va a ser un pedazo de codigo maquina (CPU) en algun lado que escribe los argumentos en algun lugar determinado (especificado por el sistema operativo) y hace call a una posicion de memoria determinada en la memoria especial (este procedimiento hace los checkeos de permiso correspondientes a el proceso que lo llama (que hace call a su direccion de memoria) y los checkeos de sanidad de los argumentos correspondientes para que no se pinche nada del sistema operativo y ejecuta si lo pedido concuerda. 
+
   
+  Como ejecuta el sistema operativo 
+    Paraece que todo pedido de hardware, incluyendo a el uso del procesador tiene que pasar a travez del so. 
+      Claro, vos tenes un codigo de CPU que queres ejecutar. (Muchas veces, en un archivo binario, no va a estar el codigo del CPU completo sino que va a estar el codigo del CPU que pudiste hacer solo y referencias a funciones de nombres determinados y un detalle de los argumentos que toma y devuelve.)    
+      seguir con: Como es la corrida de un binario incompleto (que refernecia funciones y argumentos en otro lado) 
+
+
+
   
 +Linux Standard Base (LSB el de lsb_release -a)  
   Justo lo que busca es una unica ABI para los Linux que adhieran (es una especificacion).
@@ -447,11 +517,20 @@ http://en.wikipedia.org/wiki/Executable
    Posibilidades: 
      1) Ese binario puede estar incluyendo (si la libreria que se usa es estatica) codigo de alguna libreria ya compilada que es justamente la que hace las system calls. O sea, el sistema operativo tiene una libreria ya "compilada"; en realidad mapea los machine codes para hacer las system calls en machine code a funciones del lenguage c como si hubiera sido compilada con un compilador que sabe exactamente como hacer para traducir de c a binario de system calls. Se podria pensar como que tiene el codigo objeto linkeable de esas librerias. O sea que puedo usar esas librerias incluyendo las declaraciones (y no el actual code: there isnt any!) y al linkear tengo que linkear con la libreria (ver seccion C strandard library)
      2) otra posibilidad es que no hay nada precompilado y el compilador sabe como traducir de system calls a codigo binario de system calls. El asunto es como se compila la libreria que interactua con el so (la que proporciona el so). Esta libreria va a tener en lenguage c , wrappers de las system calls. O sea funciones que toman argumentos y en base a esos argumentos ejecutan una accion en el kernel (y obtienen o no resultados) El compilador podria llegar a saber cuando aparece una function call como escribirla en binario (esto no es equivalente a tener el codigo compilado?)  (Ver seccion CStandard library) 
+     
+     En teoria yo podria llamar a una system call si se como se la llama a nivel binario (donde van lso argumentos, etc) en teoria podria hacer esto si conozco como se hacen system calls en la plataforma determinada (plataforma = OS + familia de CPU. Es lo que determina la ABI y como van a ser los binarios a partir de un codigo fuente).
+     Ejemplo: funciones de libreria "fork" "execve" que invocan a las system calls homonimas. Son llamadas que yo puedo hacer pero que hacen las llamadas que yo tambien podria hacer (a nivel CPU por lo menos las system calls estan permitidas para cualquier usuario) pero que no se como hacer. (en cada sistema puede ser distinta la arquitectura de system calls. 
+     Lo logico es que ya este compilado esto.
+  
+Popular system calls: 
+  open, read, write, close, wait, execve, fork, exit, kill.   
+
+  
   
 +C standard library 
 <>
   engloba: utilidades para manejar strings, computos matematicos, y servicios que se le piden al SO (i/o, memory allocation, etc)
-  Son librerias escritas en C tambien? como hacen las system calls? (i.g:
+  Son librerias escritas en C tambien? como hacen las system calls (explicado en detalle mas adelante)? (i.g:
   Son 29 header files
   Modificaciones (adregado de header files): 
     1995 (NA1): iso646.h, wchar.h, wctype.h 
@@ -464,14 +543,415 @@ http://en.wikipedia.org/wiki/Executable
   Los sistemas Unix (como lo es linux y sus distros) tienen (y la consideran como parte del sistema operativo) una C library compilada. Esta en formato shared library, es decir, el codigo binario (binario para un so) no se copia en cada ejecutable binario que se compila sino que se "linkea en tiempo de ejecucion" a este archivo). 
   En teoria el sistema operativo no va a funcionar bien si elimino la shared library de C. 
   
+
+  ++ glibc:
+    Es la implementacion GNU de la C standard librarcy  
+
+
+
+Mas links para jugar con todo esto :
++GDB. Ahora que sabes como funciona todo (o que mas o menos tenes una idea mejor) 
+Por ahi podes interpretar mejor la info que te muestra GDB
+http://en.wikipedia.org/wiki/Gdb
++ptrace es una system call que permite controlar un proceso mediante otro. Es el corazon del gdb por que toda la magia que hace el gdb la hace gracias a que puede hacer esta system call. Tambien la usa strace y ltrace. 
+  Info interesante:" Further, programs that inject executable code into the target process or (like gdb) allow the user to enter commands that are executed in the context of the target must generate and load that code themselves, generally without the help of the program loader."
+http://en.wikipedia.org/wiki/Ptrace
+
++strace y ltrace (te lista que system calls ejecuta cada instruccion SYSTEM CALLS!!!)
+http://en.wikipedia.org/wiki/Strace - http://en.wikipedia.org/wiki/Ltrace 
+
++Stap (parece interesante, no se bien que es lo que hace (algo con el kernel))
+http://en.wikipedia.org/wiki/SystemTap
+
++lsof (lista archivos abiertos por procesos (incluye sockets, disk files y named pipes))
+http://en.wikipedia.org/wiki/Lsof
++Netstat te muestra network connections (creo que funcionalidad similar a ver los sockets con lsof) y ademas muestra estadisticas de los protocolos etc 
+http://en.wikipedia.org/wiki/Netstat 
++Netcat
+http://en.wikipedia.org/wiki/Netcat (muy util)
+
+
+
+lsof 
+  ejemplo: 
+  Para ver que proceso abrio que archivos (con grep limitas a procesos)
+  $> lsof -i -n -P | grep ssh 
+      -i incluye sockets 
+      -n -P do not resolve ip and port names (listar con numeros y no con nombres)
+   
+     
+         
+    
+ULTIMO MOMENTO!!!
+  I've stumbled upon something big: GNURoot
+    P
+    no entiendo, es virtualizacion ? o que onda? 
+    te puede dar acceso temporal a root en tu telefono (y no encerrado en un sandbox) ?
+    (puede hackear tan facil el linux?) Creo que no. Te da un root pero de una carpeta para abajo. 
+    Podes correr programas (en particular un programa que 
+
+Links de interes para seguir investigando:
+el que disparo todo (el app que va que implemnentar esto es GNURoot creo)
+https://groups.google.com/forum/#!msg/proot_me/zAOWi2eRc0o/ayeP11Bhq1gJ
+proot
+http://proot.me/
+chroot
+https://wiki.archlinux.org/index.php/Chroot
+chroot brak out of jail
+http://www.bpfh.net/simes/computing/chroot-break.html
+
+
+    Ok Aca entendi gran parte de la cosa!!! Y como se compila!!! 
+LINUX OS / SYSTEM CALLS / lenguage de programacion C
+      El kernel presta servicios de manejo de memoria, perifericos, etc (cosas mas de bajo nivel (y mas cruciales para el correcto funcionamiento del sistema)) a programas que lo invoquen correctamente. El usuario del sistema ingresa un programa al sistema operativo(ya sea que copia un ejecutable de un pendrive o que lo escribe en un lenuage de programacion y el compilador lo convierte en un flamante binario) y le pide al mismo que lo ejecute. El sistema operativo lo pone a correr en uno o mas procesos (la forma en la que el SO maneja las ejecuciones de los procesos de los programas que dispara. (o sea, nosotros no disparamos los programas. Sino que le decimos al SO que en determinada posicion de memoria tiene el codigo que queremos ejecutar. El sistema operativo podria decidir no ejecutarlo hasta que no tenga procesadores (o memoria) disponibles para ejecutar el programa). Tambien podria decidir ejecutarlo y detenerlo en caso de alguna sonbrecarga de recursos o en el caso de algun error.
+
+(no estoy tan seguro de eso que sigue...(edit: tiene todo el sentido del mundo. Estoy bastante seguro de lo que sigue))   Lo loco es que lo que yo voy a sacar es codigo ejecutable (acabo de contestar mi pregunta con la que medio que empezo todo esto). Voy a tener solo codigo ejecutable por la CPU. Lo que hay que ver es como el SO sube al CPU el codigo que yo le paso (asi como viene. Esto esta resuelto, aca no esta la joda. Si lo puede detener si esta sobrecargado o lo que fuera pero el programa binario se sube asi como esta.).
+<< estaba confundido, lo que sigue muestra mi confusion (con lo de los permisos, lo otro tan mal no esta) :  Va a crear un proceso y va a ir pegando cachos de codigo (copia todo el programa en bloque y comienza a ejecutarlo (si lo copia por partes es por eficiencia y no por controlarlo)) pero va a verificar desde donde se sube ese codigo y los permisos? cuales los de CPU o los del SO.>>
+ Estos codigos van a contener system calls (binario) (o sea calls a posiciones de memoria del kernel en donde estan las rutinas que son las system calls) que van a ser ejecutadas por la CPU. Van a ser ejecutadas pero va a ser una ejecucion controlada por el mismo codigo del kernel space que es codigo irrestricto pero limpio y que por eso no rompe el sistema (checkeo de argumentos). Cuando se llama a una system call, el kernel va a saber quien es el que ejecuta el proceso que pide servicios al kernel (en un procesador se esta ejecutando un codigo y se hace una llamada a una kernel y el kernel tiene un registro de que usuario pidio la ejecucion de cada proceso (loa procesos es la representacion de la instancia de procesador fisico en donde se ejecuta el codigo de los programas que tiene el SO. Y el tipo de dato a travez del cual controla esta ejecucion.) Asi implementa la seguridad el sistema Operativo Linux; por medio de saber quien es dueño de cada proceso y que permisos tiene (lo sabe dentro del kernel (en una posicion de memoria solamente accesible por el kernel) ). El codigo para una determinada system call se va a fijar que usuario la esta invocando (de su registro de procesos (asumo que sabe que proceso la llama (que proceso esta siendo usado y que usuaril lo pidio)) y en base a eso va a garantizar lo pedido o no.  
+ 
+ 
+  El codigo que ejecuta el sistema operativo cuando se llama a un programa se ejecuta en el modo de CPU de userspace (por que no se ejecuta desde la posicion de memoria del kernel (la cpu lee de memoria no privilegiada. Solo el codigo de kernel esta en posiciones que la CPU considera privilegiada)). Y lo que se ejecuta del kernel se ejectua en modo privilegiado. Esto es supongo que por que este codigo maquina va a estar en un lugar privilegiado de memoria (y por eso puede ejecutar cualquier instruccion))
+
+Sistem Call / System Call wrapper (parte de la cstdlib)
+Una system call va a ser un apuntamiento a una posicion de kernel (ponele un CALL a una posicion de kernel(privilegiada)).
+  Para que un programa pueda invocar a una system call. Puede hacer dos cosas.
+  Uno, saber la direccion dentro del kernel de esa system call y conocer (tener la especificacion de las system calls para este kernel) de donde busca ese codigo de kernel sus argumentos (y en donde escribe valores de retorno) y escribir en assembler embebiddo esta instruccion, grabando previamente los argumentos en las posiciones que estanblece la especificacion para esta system call (no son posiciones privilegiadas por que se debe poder hacer desde afuera). Al finalizar la call, y al ser devuelto el control al binario ejecutable se puede leer de una posicion determinada de memoria el valor de retorno. 
+  Dos, linkear con la C std lib que tiene wrappers de todas las system calls compiladas en codigo objeto. Un wrapper para una system call va a vivir en una posicion determinada de la memoria (no privilegiada,segun donde lo guarde el usuario del sistema que lo compilo) y va a tener codigo que escriba los argumentos en las posiciones establecidas por la especificacion de la system call que wrappea (las direcciones de memoria de arguentos tampoco son privilegiadas). A continuacion el codigo va a hacer un call a la posicion donde esta la rutina de la system call en la memoria del kernel. 
+  El kernel va a tomar los argumentos y va a determinar que usuario ejecuto el proceso que hizo el llamado a esta posicion de memoria y va a determinar si le garantiza o no el servicio requerido (seguridad en linux) ).  Al ser devuelto el control al wrapper, este lee de la posicion de memoria establecida en la especificación como direccion de retorno(memoria no provilegiada y accesible por todos) y "C++-devuelve" este valor. O sea yo se en C++ que si tengo funciones en fuentes diferentes se pueden compilar en objetos diferentes que de alguna manera dejan parametrizables las direcciones de los calls y de las posiciones donde guardar los argumentos y las linkean para la ejecucion binaria. 
+  Para escribir la libreria wrapper de system calls, los del sistema operativo tiene la especificacion que ellos crearon del codigo del kernel y crean funciones de c++ (cuyos nombres se graban en tablas de funciones) que escriben los argumentos que reciben en posiciones hardcodeadas de memoria (relativas al kernel) y llaman por medio de un CALL en codigo maquina embebido (assembler, codigo binario que corre asi como se ingresa) a una posicion determinada del kernel que es la que tiene la system call (esto lo puede hacer cualquiera, o sea, es una llamada de CPU valida). La rutina en esta posicion de memoria despues decide si garantizar el servicio al usuario dueño del proceso que ejecuta el call (la rutina del kernel tiene acceso a los usuarios y sabe quien ejecuta que) y deja un valor de retorno en otra posicion determinada (o sea el wrapper tiene hardcodeada la dir de donde levantar el valor de retorno). => Codigo C++ para escribir argumentos (es codigo permitido entones c++ se teraduce a asembler que se ejecuta sin problemas. Ademas al compilarlo en c++ le asigno un nombre a las rutinas y el lenguaje me permite (API y linker) incluir el header(matching names) y linkear contra este codigo objeto desde otros programas.) 
+  Codigo assembler para el call (no se si hay funcion de c++ en la cstdlib para hacer esto (call a una direccion de memoria))
+  Nuevamente c++ para levantar el valor de retorno y devolverlo. 
+  Con todo esto encerre a la llamada de la system call dentro de una llamada de c++ ( o sea, va a haber un wrapper en algun otro lado). 
+  Si quiero eliminar algo de overhead podria llamar yo a las system calls con su correspondiente codigo binario (o sea, podria escribir macros en assembler que reemplazen el llamado a una funcion extra que wrappee a las system calls. Con esto creo que me evito el tener que incluir una libreria stanndart y el bloat que eso conyeva. (ojo aunque la libreria en general se usa en modo shared (no esta incluida en el binario))
+  
+  Al estar usando una libreria de C, el programador no necesita saber donde se graban esos argumentos o valores de retorno por que las posiciones binarias son matcheadas directamente por el linker.
+   O sea, en resumen, si mi codigo C tiene una llamada a un wrapper de una system call, en codigo binario esto se traduce a un CALL a alguna posicion de memoria (el linker hace que ese call sea a la posicion de memoria en la libreria (es una posicion de memoria relativa al archivo si la libreria fue linkeada de forma estatica (dentro del archivo esta el codigo binario de la libreria y el linker hace que llamadas a la libreria apunten a posiciones dentro del mismo archivo)) donde vive la funcion wrapper. Esta funcion wrapper no hace mas que escribir sus argumentos donde sabe que los tiene que escribir(segun definicion de las system calls) para que al ejecutarse el codigo kernel privilegiado levante los argumentos de ahi.
+   
+=> En resumen, un sistema operativo puede proporcionar 1-una especificación/definicion de comportamientos y direcciones de memoria. 2-O la implementacion en forma de libreria para sus system calls. Las system calls casi que son la razon de la existencia de los SO  por que el sistema esta para poder correr programas. Y las system calls son los servicios que le proporcciona el SO a los programas. En linux, una parte de la libreria de C (C std lib) que tiene wrappers para las system calls.
+ 
+  
+ Tammbien recupera el valor de retorno de la system call de donde la especificacion de las system calls establece que se levanta el valor para esta call en particular.  en el codigo del programa (que pasa sin ser tocado al archivo binario final) 
+ 
+ 
+VARIABILIDAD DE LA ABI 
+  
+ Segun el sistema operativo que este ejecutando (el kernel en realidad ?verificar? ). Las system calls van a estar en distintas posiciones en el kerrnel (que supongo que se graba en una posicion especial de memoria (desde el punto de vista del hardware (CPU)) en la cual las instrucciones que se leen de ahi tienen libertad absoluta para escribir en cualquier lado y acceder a cualquier harware libremente. Kernel Freedom.). Cada kernel implementa las system calls que le parece que los programas (ejecutar programas es el fin ultimo del kernel) pueden llegar a necesitar. O sea, que servicios de el entorno puede llegar a necesitar un programa (ej: escribir archivos (toda la abstraccion de block device y de filesystems), leer archivos (filesystem independant),  ) Creo que en teoria, adentro del kernel no deberian haber programas ya que el objetivo del kernel es permitir correr programas facilmente. Sin embargo.supongo que va a haber codigo tipo programa escrito para cosas que se ejecuten muy seguido y necesiten velocidad) . 
+   Las lineas de las posiciones de memoria de las system calls van a contener algoritmos que busquen sus argumentos(los de las system calls) de determinadas posiciones de memoria(accesibles con istrucciones de CPU no privilegiadas). Si quiero pasar un argumento, tengo que pasarlo escribiendo a estas posiciones.
+
+  Seguridad:
+
+Cuando yo pido de ejecutar un programa, el SO me pregunta quien soy. (que usuario esta loggeado y esta pidiendo ejecutar un programa que necesita acceder o no a determinadas posiciones de memoria sensibles. La capa de seguridad del SO (no muy segura) fuciona permitiendo usuarios y login, y registrando que permiso tiene cada usuario sobre cada archivo que se guarda en el filesystem (la abstraccion de uso del disco rigido) cuando un usuario quiere acceder a un archivo)    
+
+
+Librerias: 
+
++http://en.wikipedia.org/wiki/Symbol_table
+Shared libraries:
+
+ 
+
+  
+Procesos:
+
+http://en.wikipedia.org/wiki/Process_(computing)
++http://en.wikipedia.org/wiki/Computer_multitasking
+  2 tipos: 
+    cooperative (http://en.wikipedia.org/wiki/Nonpreemptive_multitasking) : The operating system never initiates a context switch from a running process to another process. Cada aplicacion decide cuando ceder tiempo a otras (o hay un schedule esstatico prehecho). Highly reliable, deterministic control of complex secuence, pero una aplicacion mal hecha te puede bardear la cosa
+     preemptive (http://en.wikipedia.org/wiki/Preemption_(computing)) : El sistema operativo puede cuando se le place interrumpir un proceso y context switchear a otro. Hay un scheduler que determina cuando corre cada proceso. Los interrupts hacen que yo no tenga que estar esperando a la I/O de un determinado proceso sino que puedo context switchear a otro hasta que llegue la señal del interrupt de que se recibio el I/O que era esperado
+     En la parte de multithreading explica un poco que es esto (processes that run in the same memory space => switching between threads does not involve changing the memory context). Hay threads y fibers. Los threads son scheduled preemptively y los fiber serian la variante cooperativa. En estructuras de datos, los threads serian processes con la memoria en comun (aporte mio, validar).
++http://en.wikipedia.org/wiki/Re-entrant_code
++http://en.wikipedia.org/wiki/Multithreading_(computer_hardware)
+  desde el pto de vista del hardware...(CPUs and stuff)  
+
+Nota: en linux podes hacer ps para ver los procesos (con pipe grep podes quedarte con los que tengan det palabras clave) 
+y haciendo kill -9 <PID> los podes liquidar 
+
+
+
+
+
+VUELVO A SU...
+
+
+Consolas y quien esta primero si el huevo o la gallina (quien llama a quien):
+
++Computer terminal.
+Es disposivos fisicos conectados a la computadora que te permiten introducir texto a un programa (stdin) y ver lo que va devolviendo el programa (stdout y stderr). O sea, la terminal se conecta a un programa en la computadora.  
+ Tambien dice algo muy cierto(historico) y es que el terminal era lento (en comparacion con punched cards para lograr algo hecho en la compu, pero con el desarrollo de multitasking, y como consecuencia multiples tareas y multiples usuarios, la terminal empezo a tener mas sentido por q varios usuarios podian acceder a la misma computadora y ejecutar programas que corran en "paralelo" en simultaneo (no es realmente paralelo sino un time-sharing en un ppio)
+http://en.wikipedia.org/wiki/Computer_terminal 
+
++System Console: es un computer terminal siendo usado para operar una computadora. Creo que hay algo de absoluto con esto. Como que siempre el system console es de lo que se lee para tener user input y es donde el kernel escribe al usuario.../expandir/corregir)
+ En general va a estar conectado a un shell (no es mas que un programa que te permite navegar el sistema de archivos y ejecutar programas. Seria como el minimo programa necesario para hacer la compu usable. Te permite poder decirle a la compu que programas correr y por eso es el programa que el sistema operativo dispara y conecta con la terminal) por medio de standart streams. Es decir, los streams vendrian a ser algo asi como protoccolos de comunicacion para abstraerle al programa con que se esta comunicando. Asi se puede comunicar por medio de streams a cualquier cosa que los entienda (consolas diferenctes, otros programas (por que stdin y stout y stderr tienen el mismo formato, esto permite concatenar programas (o sea que la salida de uno sea la entrada de otro)
+ 
+Linux console:  cuando secarga un sistema operativo. Lo unico que corre al ppio es el kernel. (Simplemente por que es lo que bootstrappeaste con el bootloader (el camino es: Boton de ON, bios empieza a ejecutar su programa guardado en memoria no volatil de rapido acceso (el CPU ejecuta como primera cosa lo que esta en la BIOS, se la puede pensar como un mini sistema operativo) la bios decide de que dispositivo fisico de los detectados cargar las siguientes instrucciones y busca (segun algun criterio) en el disco esepecificado algo que sea como el codigo de un sistema operativo (como hace esta busqueda, que busca?). El código de un bootloader es como codigo de un sistema operativo (y por ende, es encontrado por el BIOS y ejecutado) O sea, lo encuentra en el disco indicado en la BIOS. Si tiene el formato esperado, lo copia en la memoria primaria del CPU y lo empieza a ejecutar. El bootloader tiene en este cacho de memoria (que se grabo en una posicion privilegiada del disco* (que es limitada por que despues esta la partition table y estan las particiones)) un programa que carga otro programa que esta alojado.
+  Resumen: 
+    La Bios -> busca en el disco especificado el formato booteable. Lo encuentra en el disco especificado y copia(todo esto mediante instrucciones a la CPU) un tamaño det. a la Primary Storage (lo que es directamente leido por la CPU). Despues ejecuta esas instrucciones copiadas(phase 1) que no hacen mas que copiar otro pedazo del disco ((phase2) ahora de otro lugar, de una particion determinada) a la Primary Storage y se ejecuta un sistema  que te permite navegar los archivos (el GRUB por ejemplo permite esto) y elejir el kernel y el...
+ Esto explicado en el Linux startup Process dice asi:
+   "Once the hardware is enumerated and the hardware which is necessary for boot is initialized correctly, the BIOS loads and executes the boot code from the configured boot device. This boot code contains phase 1 of a Linux boot loader; phase 1 loads phase 2, which is the bulk of the boot loader code. Some loaders may use an intermediate phase (known as phase 1.5) to achieve this, since they are designed to be able to interpret filesystem layouts to locate the phase 2 loader."
+   O sea, el phase 2(el grueso del bootloader que te permite hacer todo lo que te permite un bootloader) esta en una particion de un disco grabada bajo un sistema de archivos entonces necesito interpretar este sistema de arxhivos para poder leerlo.
+   El siguiente paso es que se carga el kernel. Efectivamente se copian las lienas del archivo kernel (que sabe que se va a ejecutar en una porcion de memoria (el bootloader tiene potestad absoluta para decidir que tocar por que es el que copia el kernel a su posicion de memoria privilegiada.) En la memoria que tiene todo permitido y estas lineas descomprimen el kernel (supongo que traen mas cosas de otros archivos en el sistema de archivos) y lo primero que hace son ciertas cosas basicas como paginado de hardware y de memoria y ejecuta el start_kernel() (pensalo como una funcion de asembler)
+   "start_kernel() then performs the majority of system setup (interrupts, the rest of memory management, device and driver initialization, etc.) before spawning separately, the idle process and scheduler, and the init process (which is executed in user space)."
+   "The init process executes scripts as needed that set up all non-operating system services and structures in order to allow a user environment to be created. Usually, these scripts then present the user with a way to authenticate and thus login into the system."
+   Se copia la memoria del binario sh en Primary Storage (pero no en kernel space) y se ejecuta y se termina disparando otros procesos  hijos del script (y del proceso asociado al sh que corre) 
+   
+   Al init process lo ejecuta en user space, es decir no copia la memoria del binario init en el Prinary Storage y lo ejecuta de ahi sino que crea un proceso que se encarga de que cuando esta activo , el cpu lea de las posiciones de memoria asociadas al binario en cuestion 
+   si init fuera un script, al ejecutarlo en realidad el loader llamaria al shell que esta en el shbang ( o sea invocaria a un programa binario con el stdin igual al archivo script que "ejecutaste" o sea, el programa binario que corre en realidad es el shell con los argumentos determinados (acordate que el shell sirve para ejecutar otros programas ademas, y estos pueden variar segun el script)) 
+        
+*(los primeros bytes para el block device (se puede pensar como block device?) (acordate que filesystem va encima de block device (o sea que no se adapta a la morfologia del disco?)). La posicion de memoria dentro del disco es el MBR 
+
+
+
+
+
+
+
+
++Standard Streams will shed some light on all of this. Read and expand...
+Es la forma en la que un programa se comunica con su entorno. Es una capa de abstraccion muy util para los programadores que les permite comunicarle cosas a otros programas (como emuladores de temrminales) o a hardware supongo (como era antes con las consolas fisicas) siempre que este entienda el "protocolo". Idem para recibir informacion.
+When a command is executed via a shell, the streams are typically connected to the text terminal in which the shell is running, but can be changed with redirection, particularly via a pipeline. 
+stdin:
+  Standard input is data (often text) going into a program. The program requests data transfers by use of the read operation. File descriptor = 0
+stdout:
+  Standard output is the stream where a program writes its output data. The program requests data transfer with the write operation. Unless redirectedd, stdOut is the text terminal which initiated the program (siempre hay una text terminal asociadoa?). File descriptor = 1
+stderr: 
+  For example, output of a program in a pipeline is redirected to input of the next program, but errors from each program still go directly to the text terminal.
+  
++file descriptor  
+Generally, a file descriptor is an index for an entry in a kernel-resident array data structure containing the details of open files (una tabla pror proceso. O sea, son los archivos que el proceso abrio	
+Pruebas en linux: On Linux, the set of file descriptors open in a process can be accessed under the path /proc/PID/fd/, where PID is the process identifier.
+Algo similar (una aplicacion q lo lista a esto...) es lsof 
+
+   En el shell, cuando invoco un programa, pedo establecer cuales van a ser sus streams de entrada y salida. Vos le decis a un programa que va a correr redirigiendo su stream de stdout a un archivo asi: 
+   $> ./myProgram > myFileContainingStdout 
+   Si quiero redirigir el stderr tambien (o sea lo que se ve en la pantalla) tengo que hacer...
+   $> ./myProgram &> myFileContainingStdout&stderr  
+http://en.wikipedia.org/wiki/Standard_streams
+
++ virtual console (VC) – also known as a virtual terminal (VT) – is a conceptual combination of the keyboard and display for a computer user interface. It is a feature of some operating systems such as BSD, Linux, and UnixWare in which the system console(en el sentido de el conjunto teclado/monitor fisicos (haciendo alt+f?)) of the computer can be used to switch between multiple virtual consoles to access unrelated user interfaces. 
+http://en.wikipedia.org/wiki/Virtual_console
+
++ Linux Console (mas sobre system console que no quedo muy claro en que se dif de computer terminal). Tambien explica single user mode...
+http://en.wikipedia.org/wiki/Linux_console
+
++ Linux strartup Process (mas datos sobre linux)
+http://en.wikipedia.org/wiki/Linux_startup_process
+
+
+ALMACENAMIENTO . DISCOS Y TODO ESO 
+
+Cluster:
+  Relacionado con la forma fisica del disco (forma de disco). Una track es, como sugiere el nombre un anillo finito del disco en donde se escribe informacion. Estos tracks van a estar interrumpidos por "sectors" que son como trastes en la guitarra solo que parten todos del centro del disco y lo dividen como una pizza. 
+  Una agrupacion de varios track sectors (pedazos de una track que estan en det sector)contiguos es lo que se llama un cluster (ver el dibujito en la pagina de la wiki, es el choricito verde).
+  Un valor normal para un disco tipico es de 512 bytes (4096 bits) por track sector. Un valor tipico para cluster es de 8 sectores ( o sea 4096 bytes. Esto es 4KiB (4 kibibytes, o sea 4 * 1024 bytes))
+  En el disco se puede escribir de a clusteres. O sea de a 4KiB por vez.
+  
+Filesystem:
+  FAT por ejemplo tiene una tabla que tiene a todo cluster en el disco como entrada. Cada entrada tiene un numero de cluster que es el proximo cluster en el archivo o una flag indicando memoria vacia o espacio reservado. 
+  El root directory del disco es un archivo que esta en el table que contiene informacion de los primeros clusteres de todo archivo en mi directorio. Asi sigue la cosa para cada archivo que es un directorio (sub directorios de root). 
+   El nummerito FAT16 o FAT32 se refiere a la cantidad de bits usados para hacer referencia a cada cluster. Entonces una FAT32 tiene 32 bits (o sea 2^32 clusteres addresseables algo asi como 4.295 Gclusteres. Cada cluster tiene una determinada cantidad de bytes (en el ejemplo anterior eran 4*2^10 bytes (si lo llamo KB=> en FAT32 puedo addressear ) 
+   2^10 = 1024    = 1 KiB
+   2^20 = 1048576 = 1 MiB
+   2^30 =         = 1 GiB
+   2^40 =         = 1 TiB
+   => FAT32 tiene para 4 GiB posibilidades de apuntar. Como cada posibiloidad tiene 4* 1MiBytes => esto podria representar 4 TiB de almacenamiento.
+   
+
+
+     
++http://en.wikipedia.org/wiki/Cluster_(file_system)
+
+
+
+
+
+
+VUELVO A ROOTING 
+
+The process of rooting varies widely by device, but usually includes exploiting one or more security bugs in the firmware of (i.e., in the version of the Android OS installed on) the device. Once an exploit is discovered, a custom recovery image can be flashed which will skip the digital signature check of firmware updates. Then a modified firmware update can be installed which typically includes the utilities needed to run apps as root. For example, the su binary can be copied to a location in the current process' PATH (e.g., /system/xbin/) and granted executable permissions with the chmod command. A supervisor application, like SuperUser or SuperSU, can then regulate and log elevated permission requests from other applications. Many guides, tutorials, and automatic processes exist for popular Android devices facilitating a fast and easy rooting process.
+
+No se bien si lo de digital signature check es para que los updates no te saquen el root o que onda.
+
+source: http://en.wikipedia.org/wiki/Android_rooting
+
+
+
+RECOVERY
+
+Me parece que lo del recovery es para poder flashear custom ROMs (cosas que no estan correctamente firmadas por google). No es lo que planeo hacer aca asi que creo que no es necesario.
+
+La joda es que el custom recovery te deja hacer varias cosas que no te dejaria el recovery normal (creo).
+Yo lo unico que quiero es poder modificar el sistema de archivos de la stock ROM con un update.zip en la sd card.
+Para los devices cuyo stock recovery acepta instalaciones de update.zip s que no esten firmados (probar en el fame. En el peor caso te da un signature error) directamente podes ejecutar estos update.zip que te dan root.
+(instalan el binario su en la carpeta /system/xbin creo) 
+
+Una cosa a probar es rootearlo e instalar connectBot (ssh server) a ver si con ssh podes correr root
+
+
+Archivos que sirven:
+
+update.zip (el de root) 
+update.zip (el custom recovery temporal)
+
+Proceso 
+
+volume Up + Home + Power => entras a bootloader(como grub). desde ahi podes cargar el recovery (que es creo que un mini sistema operativo que te permite cosas basicas, entre otras montar discos y modificar el sistema de archivos de la particion /SYSTEM (la que tiene la ROM (sistema operativo linux -(a excepcion de) kernel(que esta creo en otra particion)) 
+
+pregunta: el recovery comparte el kernel con la rom? 
+
+pregunta en el tutorial de como instalar CWM recovery temporal piden que rootees primero 
+pasos: 
+1-entra al recovery temporal* (sin root probalo) y hace un backup de las cosas importantes a la sd(averigua cuales son) 
+  * lo logras entrando al bootloader (volUp+home+power), desde ahi al "stock recovery" y seleccionando "install zip from ecternal sd" y eligiendo el install correspondiente a CWM recovery.
+2-desde el recovery temporal podes  wipear la data del telefono y el cache. dejalo en stock (asi se borra todo lo que pudea haber de superSU)
+3-volve a entrar al recovery temporal y corre el root. 
+
+4-ahora proba si podes hacer adb y usar tu stock ROM como root. (el kernel quedo intacto). Si no va proba con un terminal emulator y con un ssh (connectBot). Considera mas adelante (una vez rooteado) instalar la apk de busyBox ( podes desisntalar aplicaciones desde el recovery?)
+
+
+Ahora probando el CWM temporary recovery de shaaan
+
+Increible funciono!
+  1- Lo grabe (el recovery de shaan) en la sdcard y rebootie al bootloader (volUp+Hopme+Pwr) y pude entrar sin probnlemas al recovery customizado. 
+  2- Hice un backup a la targeta sd (con la opcion simple: backup) (esto backupea las particiones criticas? )
+  3- Instale el root desde el mismo recovery. (proba por favor si corre este recovery en el fame) 
+  4-  Activo usb debugging en Developer Options.
+  5- Me conecto al device via ./adb shell asi: $> ~/git/dev/android/sdk/platform-tools/adb shell 
+  6- Ahh tengo SU en adb shell!!!
+      hice:  (claro, le dije que comando correr a su) su -c su 
+                edit: lo hize correr en la compu del laburo (con un sdk mas viejo) y el superuser te pide confirmacion cuando haces su -c su desde adb. En esta netbook no pasa eso(en la vaio).
+
+  7-pruebo de hacer un backup de las cosas (creo que system esta montada readonly y tengo que remontarla)
+      si haces 
+        less /proc/mounts te muestra los devices que estan montados (o sea, de los block devices que ve el sistema operativo, cuales estan montados y donde) 
+         
+        emulando estas lineas podes encontrar la manera de llamar a >mount -o remount,rw -t ext4 /dev/block/mmcblkp04 /system O a alguna otra particion para montarla no en read only sino modificable (/ por ejemplo)   
+        
+        
+  8- creo que tengo que probar crear una carpetita en / y ver de escribir ahi. Tratar de ver como se escribe desde ./adb para poder meter archivos mas facil. En el peor de los casos los metes en system o en la sdcard y despues los moves. 
   
   
   
    
-  
+-----------------------------------------------------------DRIVE---
 
-  ++ glibc:
-    Es la implementacion GNU de la C standard librarcy  
+Agregado desde el drive
+
+
+Links tray:
+
+guia practica para hacer muchas cosas  en el i9070
+http://forum.xda-developers.com/showthread.php?t=2198341
+
+Todos los tutoriales para i9070
+http://forum.xda-developers.com/showthread.php?t=2495800
+
+Como usar el updater-script 
+http://forum.xda-developers.com/showthread.php?t=1669489
+
+clkockwork mod explicaion que es (no dice que kernel usa)
+http://forum.xda-developers.com/wiki/ClockworkMod_Recovery
+http://forum.xda-developers.com/showthread.php?t=2190211
+
+rooteo universal (para varios phonos)
+http://forum.xda-developers.com/galaxy-s2/orig-development/04-12-2012-universal-rooting-phones-rom-t1746794
+
+fijate si podes correr un scruipt usando adb y haciendo su - c /path/to/script
+http://su.chainfire.eu/#how
+
+
+
+
+
+
+nueva entry, modificacion del 30 de julio, pasar a archivo en git/aprendizaje/android. (DONE? NO)----------------------------------------------------------------------------------------- 
+
+ROOTEAR LIMPIO GT-S6810L
+
+3 opciones. fijate si alguna se puede probar en tu telefono
+
+1- Motochopper: 
+http://forum.xda-developers.com/showthread.php?t=2252248  (instructivo motochopoper para el s4, deberia andar en el fame tambien) 
+No es una zip flahsable, es un script para linux que corre el adb y hace cosas para rootear el telefono.  Es otra opcion interesante que no necesita meter una sd ni cambiar el recovery. Hay que ver como te toca la rom. 
+
+2- reset root:
+http://forum.xda-developers.com/showthread.php?t=1886460&__utma=248941774.509208529.1404765545.1405964445.1406726129.3&__utmb=248941774.1.10.1406726129&__utmc=248941774&__utmx=-&__utmz=248941774.1406726129.3.3.utmcsr=forum.xda-developers.com|utmccn=(referral)|utmcmd=referral|utmcct=/showthread.php&__utmv=-&__utmk=227575966
+Idem motochopper, no es algo que corre desde el recovery sino desde windows con el adb. 
+
+3- CWM y el superSU de chainfire. (es el que instale yo):
+http://forum.xda-developers.com/showthread.php?t=2656949&page=2
+
+creo que este post habla de l o mismo
+http://forum.xda-developers.com/galaxy-s2/orig-development/04-12-2012-universal-rooting-phones-rom-t1746794
+
+relacion entre recovery.img y el flashable zip file (que se instala desde el recovery. Ojo, para instalarlo desde un recovery quizas necesitas tener una version vieja de CWM o algun recovery custom por que puede que el stock recovery no te quiera instalar la flashable zip file) 
+El flahsable zip file le dice al shell de el stock recovery (o el custom que hayas instalado) que descomprima la carpeta con la imagen (los archivos del recovery) en la particion del recovery. Despues le decis reboot recovery (el sistema operativo del recovery actual (no el qu ese copio al disco y a esta corriendo por que se levanto del disco y esta en la memoria ram. Hacer un reboot del recovery pisa el stock recovery con el CWM. Podre volver despues? Y si, en teoria haciendo lo mismo pero copiando el stock recovery en la recovery partition. 
+  En el recovery en teoria tengo root. ( en el stock recovery tb por que puedo acceder a modificar cualquier particion con estos scripts de instalacion). Desde el recovery puedo meter root en el ROM sin modificarlo que es lo que yo quiero. (para esto supongo que debe haber algun flashable .zip de superSU que pueda instalar) (en teoria el flashable .zip lo instala en el gt-s6810L
+
+
+=> Caso importante probar en tu phono el superSu script desde el stock recovery y modificado para que no instale el superSU apk, a ver que pasa. Si sigo teniendo su desde root.
+probar si lo instalo, hago lo que necesito
+	// script de root que pone el tcpdump en donde tiene que ir con sus dependencias) . Por ahora esta comentado por que la primer prueba consistiria en instalarlo, ver que pasa. (Tene bien determinada cual fue la que instalaste ahora que va muy bien. Creo que esta en android)
+ y despues lo desinstalo (no unrooteo(unrooteo ademas se refiere a sacarle su a las aplicaciones. Creo que con elliminar el binario estas hecho.)  
+
+
+Quizas no necesitas root (aunque seria lindo tenerlo por cualquier cosa) 
+ Otra opcion es probar de instalar el su con superuser, hacer lo que tengas que hacer, instalar el y despues  (quizas otra opcion es levntar el tcpdump y lo que necesites directamente desde un installable.zip) 
+
+
+Appendear a plan: (netbook: /home/michael/git/docs/plan)
+	archivo planCat.crp en el drive que tiene la continuacion de plan hecha en compu theia. 
+
+
+-------------------------------------------Nueva entrada
+
+Probando algunas cosas 
+
+El lugar donde estan los ardhcvios que ves en el MTP del telefono (y los que ves ene l telefono tambien ) es la usb storage. En el linux de android se ve (por alguna razon que desconozco) como sdcard y esta montado en /storage/sdcard0
+
+
+Data sobre linux.	
+https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
+
+
+
+
+--------------------------------------------Nueva entrada
+
+/dev/block/vold/179:8
+
+este es el device con la usb storage
+
+se puede remontar con rw (cuando hay una falla entra en modo readonly) asi 
+mount -o rw,remount /dev/block/vold/179:8
+
+puedo desmontar el disco /storage/sdcard0 system con el android corriendo prendido en el telefono. 
+
+Parece que antes de hacer esto tengo que matar un par de aplicaciones que lo usan (whatsapp y todo lo relativo a update (lo hago desde el mismo telefono)
+
+despues puedo desmontar. 
+
+para volver a montar hago : (o algo asi, probe hasta que salio)
+
+mount -o rw -t vfat t/dev/block/vold/179:8 /storage/sdcard0 
+
+
+-----------------------------------------------------------/DRIVE
+
+
+
+TCPDUMP on android
+
+
+1- instalar las herramientas necesarias para la toolchain
+  a) sudo apt-get install emdebian-package-keyring (en ubuntu raring) (ojo es EM DEBIAN)
+  b)   agrego estas lineas a /etc/apt/sources.list
+          deb http://ftp.us.debian.org/debian/ squeeze main
+          deb http://security.debian.org/ squeeze/updates main
+          deb http://www.emdebian.org/debian/ squeeze main
+  c) synchronize index files: $> sudo apt-get update 
+
+
+
 
 
 
@@ -483,17 +963,10 @@ http://en.wikipedia.org/wiki/Executable
 posible hack, hacer que el linux piense que sos adb (aparentemente adb puede hacer muchas cosas) 
 mandando datos de tipo adb al servidor que los lee. 
 
+software inyectado:
+podrria tener un counter de la cantidad de veces que corrio y cuando llega a 0 (que arranque n un numero determinado) que se elimine (o desactive, total, un binario...) pero que elimine toda copia de cualquier cosa (paquetes, imagenes, recordings)
 
-
-
-
-
-
-
-
-
-
-
+Averiguar que tipo de facilidades hay desde linux siendo root para inspeccionar la maquina virtual de las aplicaciones de android. Quizas le podes pedir que te avise en determinados eventos y capturar mas facil la data
 
 
 recordar instalar: 
@@ -512,3 +985,40 @@ recordar instalar:
   no olvidar los sounds (quiero bajar con el kies pero no me agarra el java que necesita) Los podria copiar a mano.
   Proximo paso connect usb storage y bajar los sonidos y las cosas de el audio mansger(ver como hacer esto)
   
+  
+investigate further:
+http://en.wikipedia.org/wiki/JNI  
+
+
+
+
+
+Sigue la cosa: 
+
+  Reinicio el cel (piso la ROM ). Desde Odin. Como era JellyBean se ve qu eno piso todas las carpetas del sistema. Solo las que tienen software del sist operativo . Supongo que esto es asi (si se fue el su binary del telefono)
+  
+Sigue la cosa!!!!
+
+  Reinicie a stock rom. Sigue fallando cada tanto la si, Recien rebooteando revivio (saque la sim mientras prendido, le di apagar , con la pantalla apagada pero no luces de botones apagados inserto sim, vibra y se apaga por completo. Prendo y anda).
+  
+  Ahora pienso que puedo usar adb o ssh y es lo mismo pero no estoy tan seguro de esto. Siendo root puedo correr ssh? 
+
+(edit: NO estoy tan seguro de esto!)
+  Parece que la cosa es asi: Si el kernel no es custom entonces adb corre en "secure" mode y no te deja hacer su. A pesar de tener el su binary instalado. No se si es tan asi esto eh, me parece que no. 
+  
+  => pasos a seguir. Conseguir root (lo tenias con el update que instalaste desde la sd). Probar primero copiando el binario su (como haces esto si sdb no te deja copiar cosas al /system partition? )  
+  
+  parece que adb remount es lo que te deja hacerla writeable a la particion.
+  
+
+
+  En realidad creoq ue lo que tengo que aprender a hacer es corres estos scripts desde el update de samsung!
+  
+  
+  
+  
+  
+  
+  
+
+
