@@ -126,7 +126,9 @@ Commit del merge: cuando hay una bifurcacion y se hace un merge, se crea un comm
 (en este caso el remote/master que avanzo desde la ultima vez que hice commit.). La rama que estoy mergeando (mi master local) es la que termina apuntando a este commit. (la otra, la read only queda donde estaba, supongo) 
 
 push
-  toma como argummento un repo (por default es origin) y empuja la current branch al 
+  toma como argummento un repo (por default es origin) y empuja la current branch a la branch homonima en el repo elegido (creo). Copia los commits y avanza el puntero. No pueden haber muchas posibilidades por que si estoy en una branch que tiene algun grupo de commits en comun con la branch en el repo, => al hacer un fetch me viene la ultima version de la branch 
+
+puedo hacer un push si no hice fetch de lo ultimo antes? creo que la respuesta es no.
 
 
 
