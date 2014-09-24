@@ -80,7 +80,11 @@ Entonces pruebo
 $> git push origin (para subir mis cambios a la nube) 
 
 
+External Diff and Merge tools. 
 
+Aparentemente las merge tools de p4(perforce) son muy buenas. Me las bajo de la pajina (p4Merge) y para instalarlas solo hay que descomprimirlas en algun lugar que persista y hacer un link simbolico de  p4Merge en /usr/local/bin/p4merge.
+
+En /usr/local/bin tambien hay que crear 2 scripts wrappers para que se corra al diff y al merge con argumentos distintos. Es decir, git llama a los scripts. Los scripts acomodan los argumentos (a diff, por ejemplo solo se le pasan los argumentos file-orig y file-modified.)
 
  
 
