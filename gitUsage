@@ -109,6 +109,38 @@ En /usr/local/bin tambien hay que crear 2 scripts wrappers (lo que esta en usr l
 
 La idea es correr al diff y al merge con argumentos distintos. Es decir, git llama a los scripts siempre con los mismos 7 argumentos. Los scripts acomodan los argumentos (a diff, por ejemplo solo se le pasan los argumentos file-orig y file-modified.)
 
- 
+
+Idea de los actores
+
+en todo momento estoy yo, esta un servidor remote y estan los otros usuarios (que podes abrstraerlos como uno que modifica al servidor) 
+
+fetch. 
+  Especifico un remote. En el config file, lo normal es que se especifiquen las branches a traer. Lo que hace el fetch es traer los commits para poder actualizar todas las branhces (que son copias read-only de las branches del remote repository). Actualiza tambien las copias locales read-only de las branches del remote. => tengo info actualizada del repo. 
+
+
+push y pull 
+  pull es un fetch seguido de un merge para las branches que esten configuradas de las que esta configurado que traiga el fetch. 
+	merge: el merge mergea commits asi que asegurate de tener todo commiteado lo que quieras mergear.
+  Si yo hice cambios en una branch a la cual tambien hicieron cambios en el remote. (o sea, hay mas commits). Cuando haga fetch no pasa nada, pero cuando quiera mergear (proceso que ocurre automaticamente con el pull) se va a disparar un three way merge (entende que lo que estas queriendo hacer aca es agregar tus cambios a un proyecto que crecio en el interin que los hacias. Vos queres que quede todo lo que hicieron los demas + lo tuyo. Eso es un merge de commits) . Archivos con nombres distintos no van a interactuar por que van a aparecer todos en el commit del merge. 
+Commit del merge: cuando hay una bifurcacion y se hace un merge, se crea un commit que tiene como padres a el mio y el (para poder traer las referencias a los archivos que existen solo en alguno de los dos cojuntos) bifurcado
+(en este caso el remote/master que avanzo desde la ultima vez que hice commit.). La rama que estoy mergeando (mi master local) es la que termina apuntando a este commit. (la otra, la read only queda donde estaba, supongo) 
+
+push
+  toma como argummento un repo (por default es origin) y empuja la current branch al 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   
