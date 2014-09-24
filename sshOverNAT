@@ -1,0 +1,83 @@
+Conexion de compus detras de NAT
+
+Opcion 1-
+
+  PWNAT
+  Un programa (server) que aparentemente permite conectar (sin intermediarios como es el caso de teamviewer) dos compus asi :
+  
+  Machine A (ssh client) -> NAT A -> net -> NAT B -> Machine B (ssh server) 
+
+  sin usar intermediarios
+  (en ppio va a servir para maquinas linux)
+
+  Bajo e instalo pwnat (corro make en la carpeta descomprimida)
+  samy.pl/pwnat 
+
+  Obtengo las ips de maquina A y maquina B (hay paginas que te dicen tu ip): 
+  ~>wget -O - -q icanhazip.com
+
+  NO PUEDO HACERLO ANDAR!!!
+  pruebo con
+  
+  CHOWNAT (lo bajo , es un perl script) (no pasa archivos por scp) 
+  
+  Se lo corre asi: 
+ 
+  <servidor (en maquina behind wifi nat)>
+  ./chownat -d -s 80 <ip publica del cliente>
+
+  <cliente en otra maquina (behind wifi o LAN)>
+  ./chownat -d -c 8000 <ip publica del servidor>
+
+  Esto tuenelea el servicio que este corriendo en el puerto 80 del servidor a el puerto 8000 del cliente.
+  Es decir, cuando en la maquina cliente yo pida a algun programa cliente(browser, ssh, etc)  que se conecte
+  a la ip y puerto localhost:8000, se va a conectar a lo que haya en el puerto 80 de la maquina servidor.
+    
+  En mis pruebas en THEIA funciona en una direccion (el server tiene que ser el que esta detras del wifi nat) !!!
+  
+  Lo probe desde casa para comunicarme con theia y funcionaba both ways?
+  
+  PWNAT  
+  
+  Si quiero la funcionalidad de PWNAT pero sin tener que decir desde el servidor la ip del router que esconde
+  a la maquina cliente que se va a conectar, puedo probar de usar PWNAT (pwnat hace una magia para encontrar
+  esta ip). Sí le tengo que pasar a pwnat cliente la direccion ip del router que esconde la maquina que
+  corre pwnat servidor.
+  
+  Explicacion muy simple de como funciona:
+  
+  Esta es la comunicacion que se quiere:
+  
+    Machine A (ssh client) -> NAT A -> net -> NAT B -> Machine B (ssh server)  
+
+    When you start up the pwnat server on machine B, it slowly fires off
+    UDP packets to machine A (los manda a la ip de NAT A). Of course, NAT A is not expecting these so it
+    drops every one of them. Machine B does not stop.
+    
+    Once you begin the pwnat client on machine A, it begins sending UDP
+    packets to machine B. Note: pwnat defaults source and destination
+    ports to 2222. Any unprivileged user can set UDP source and dest ports.
+    Normally the UDP packets that machine A is sending to NAT B would get dropped.
+    However, since machine B is sending similar packets OUT, NAT B assumes
+    these are responses and lets them back in. Once machine B sees these packets,
+    it sends handshake packets back to machine A. These packets will not get
+    dropped by NAT A because of the same reason: NAT A sees packets going out, and
+    the packets coming back to the NAT look like responses to the ones going out.
+  
+    O sea , basicamente manda paquetes que contienen datos similares desde las 2 compus a los 2 NATs.
+    Entonces, los NATs en lugar de droppear los paquetes los dirigen a las respectivas maquinas, por
+    que le parecen responses. O sea le haces creer al router que un paquete q le llega desde otra maquina 
+    es una response a un paquete que mande desde adentro de la NAT, y por eso se puede obtener paquetes de 
+    afuera y establecer la conexion.
+    
+    
+
+
+Opcion 2 
+
+  Usando un servidor con ip publica de intermediario y haciendo un tunel ssh asi 
+    client~>ssh -R 10002:localhost:22 middleUser@middleIp 
+    server~>ssh clientUser@middleIp -p 10002
+    
+    este ultimo paso se puede hacer en 2 pasos...
+  

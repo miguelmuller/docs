@@ -1,0 +1,5 @@
+set nu #line numbers
+set expandtab # spaces for tabs
+set tabstop=2 # 2 spaces for tab
+set ai # autoindent
+

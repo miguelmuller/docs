@@ -1,0 +1,157 @@
+=> Objetos sin Scope y pasaje por Referencia...
+
+esto...
+   relaxed.Bind<float>(std::string("sentinelFloat", 1.2345); 
+ me tiraba error de compilacion. El prototipo es este...
+   bool Bind(const std::string & label, EntryType & value);
+   
+Se ve que si quiero pasar referencia,es mejor q exista en algun scope la variable q estoy pasando por ref.
+
+Un problema relacionado...
+=> miembros referencia
+
+Tengo una clase...
+	BasicConfig (file-BasicConfig.cpp)
+dentro de la cual en el sector privado) hay una clase... 
+	EntryBase
+y una clase... 
+	template<typename ValueType>
+	Entry<ValueType> : public EntryBase
+EntryBase es como una interfaz para el tipo Entry<T> y tiene un miembro label (std::string) y un par de fucniones virtuales
+Entry<T> tiene un miembro...
+	 T & valueHolder; 
+
+La clase entry...
+ 86					template<typename ValueType>
+ 87                 struct Entry : public EntryBase
+ 88                 {
+ 89                         Entry(const std::string & labelIn, ValueType & valueHolderIn)
+ 90                           : EntryBase(labelIn)
+ 91                           , valueHolder(valueHolderIn)
+ 92                                 { }
+ 93
+ 94                         virtual bool fromString(const std::string & value)
+ 95                         {
+ 96                                 return snei::fromString(value, valueHolder);
+ 97                         }
+ 98
+ 99                         virtual std::string toString() const
+100                         {
+101                                 std::string value;
+102
+103                                 snei::toString(value, valueHolder);
+104
+105                                 return value;
+106                         }
+107
+108                         ValueType & valueHolder;
+109                 };
+
+El constructor toma una referencia a un string y una referencia a un value holder.
+
+El problema me surgio a mi por como se usan esas referencias. Para instanciar un Entry en el heap , lo que hacia era pasar como segundo argumento
+
+un valor q dp se destruia (un objeto automatico) y entonces la referencia q es el valueHolder perdia su valor, por q se eliminaba a lo q valueHolder 
+
+apuntaba. Ento no pasa con el label por q si vemos EntryBase...
+
+ 75                 struct EntryBase
+ 76                 {
+ 77                         EntryBase(const std::string & labelIn) : label(labelIn) { }
+ 78                         virtual ~EntryBase() { }
+ 79
+ 80                         virtual bool fromString(const std::string & value) = 0;
+ 81                         virtual std::string toString() const = 0;
+ 82
+ 83                         std::string label;
+ 84                 };
+
+el constructor llama al constructor este de string:  std::string( const std::string $ )  (o sea, el que toma una referencia y hace una copia interna
+
+del valor de la ref para inicializarse) 
+
+
+	 
+
+	
+
+Preguntas
+	una variable estatica publica miembro de una clase. Existe y tiene su valor si no se creo ningun objeto de esa clase? 
+
+	
+	
+Clases Templates con subclases 
+http://pages.cs.wisc.edu/~driscoll/typename.html
+
+fijate, el problema es este
+
+// Tengo una funcion template que asume q la clase que se pase como parametro al template tiene una clase anidada q se llama iterator (caso tipico)
+template <class T>
+void foo() {
+   T::iterator * iter;
+   ...
+}
+
+
+// Esta podria ser la clase que se pasa como T a la funcion template foo (asi: foo<ContainsAType>(); ) 
+class ContainsAType {
+   class iterator { ... }:
+   ...
+};
+
+// Pero podria pasarse esta clase, y se pudre todo...
+class ContainsAValue {
+   static int iterator;
+};
+
+ =====>Solucion
+
+template <class T>
+void foo() {
+   typename T::iterator * iter;
+   ...
+}
+
+T::iterator es un nombre calificado y dependiente (del parametro T) estos nombres son parseados como non-types (o sea como un nombre de un miembro (metodo o variable) y no como un tipo)
+por C++
+
+Con typename estoy diciendo q lo que sigue debe ser tratado como un tipo.  
+
+
+Variables de entorno
+<stdlib.h>
+tiene 
+putenv("<VAR>=<VALUE>");
+getenv("<VAR>"); 
+
+para setear y obtener variables de entorno para este programa
+
+
+
+
+
+
+THINKING IN C++
+
+Chapter 4.
+
+Como hace c++ para favorecer el uso de bibliotecas?
+  Si querias hacer una biblioteca en C, lo implementabas con un struct y era una paja de nombres, etc. 
+
+C Libraries :
+  Juntas caracteristicas en un structs y definis funciones que actuan sobre esos structs. 
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+	
+	

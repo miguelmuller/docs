@@ -1,0 +1,27 @@
+Thiniking in c++ 
+
+chapter 1
+
+
+
+chapter 4
+
+comportamiento del linker en c...
+
+It’s important to realize that in C, the external references that the linker searches for are simply function names, generally with an underscore in front of them. So all the linker has to do is match up the function name where it is called and the function body in the object file, and it’s done. If you accidentally made a call that the compiler interpreted as func(int) and there’s a function body for func(float) in some other object file, the linker will see _func in one place and _func in another, and it will think everything’s OK. The func( ) at the calling location will push an int onto the stack, and the func( ) function body will expect a float to be on the stack. If the function only reads the value and doesn’t write to it, it won’t blow up the stack. In fact, the float value it reads off the stack might even make some kind of sense. That’s worse because it’s harder to find the bug.
+
+declaracion...
+
+struct <nombre de la clase>
+{
+  //contenido de la clase
+};
+
+
+chapter 5
+
+el ejemplo de friend esta muy claro ademas (lo de friend es bastante pavo) para ver que sentencias (la de g() y la de Z en X ) se pueden 
+ejecutar sin necesidad de declarar las cosas antes (ni la funcion global ni la struct Z). Si hace falta declarar la funcion perteneciente 
+a Y (Y::f(X*) )  para lo q hizo falta declarar antes Y, y previo a eso declarar de forma incompleta a X (para q Y lo pueda tomar como argumento en su funcion ) 
+
+

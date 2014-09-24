@@ -1,0 +1,62 @@
+Ecommerce: Diseño de una pagina para comprar por internet del estilo onda hola mundo (solo poner el servidor, hacer una pagina basica que venda un solo producto usando apache2, php y magento)
+
+Configuracion apache2
+
+Instalo el paquete apache2:
+sudo apt-get install apache2 
+  (el programa httpd es un daemon que queda corriendo como un servicio(sudo apache2 restart/stop/reload/start))
+
+  Creo un virtual host: en la carpeta /etc/apache2/sites-avaliable/* creo un archivo xml de nombre Ecommerce con los datos de mi virtual host (directorios para index(use /var/www/Ecommerce que es un simlink a ~/git/dev/Ecommerce/root), logs, etc).  en /etc/apache2/sites-enabled/ creo un  link simbolico a mi sites-available con el nombre 001-Ecommerce. 
+
+Pruebo con un archivito en ~/git/dev/Ecommerce/root/index.php
+que tiene codigo php (echo hola mundo) 
+
+Problema! Apache pide que todos los parents (desde home hasta el directorio donde puse mi pagina sean searchable (permisos 755 (5 para everyone)) por el web server. 
+O sea desde el root hasta donde apunta el simlink tien que searchable por el web server. 
+2 soluciones : a) hago a todos los directorios searchable por www-data (usuario de apache2) 
+               b) le digo a apache que corra como usuario michael (es lo que hize).(linea: "User michael" en apache2.conf)  
+               
+
+php5 
+
+instalo el paquete libapache2-mod-php5
+sudo apt-get install libapache2-mod-php5
+(me dice que instala esto paquetes extra): apache2-mpm-prefork libapache2-mod-php5 php5-cli php5-common
+los instala bien y me crea el link de una en los /etc/apache2/mods-enabled/
+
+le doy restart al servicio apache2
+
+Mysql
+
+instsalo los paquetes : mysql-server libapache2-mod-auth-mysql php5-mysql
+(el servidor mysql, la extension de mysql para apache y la extension de mysql para php)
+el primero te pide pass. (uso mi esquema de pass con <esquema de pass>(mysql))
+
+(No lo hize)
+sudo vim /etc/mysql/my.conf
+Si quiero acceder a la base desde otra compus de mi network, tengo que poner la ip que tiene mi maquina en ese network. Ahora esta con la dir ip de localhost (127.0.0.1 la ip q entiende mi maquina que tiene?claro, local loopback)
+
+Para empezar con mysql:
+1- creo una base de datos 
+      Entro a mysql asi (~>mysql -u root -p ) entro mi password, y una vez loggeado como root puedo hacer la sentencia: mysql>CREATE DATABASE EcommerceDB; 
+      Verfico haciendo: mysql>SHOW TABLES FROM EcommerceDB;
+2- Instalo la interfaz grafica de bases de datos mysql-workbench
+3- creo una tabla Usuarios con la interfaz grafica: (creo una conexion que se conecte a mi ip de loopback, usuario root, default Schema EcommerceDB la guardo y le doy conectar; clickeo en la DB, right-click en Tables, create new table. Meto la data. Uno de los campos es id y tiene opciones PK NN y AI seleccionadas. El engine es innoDB)  
+4- verifico que se haya creado desde mysql> SELECT * FROM Usuarios; 
+5- ya puedo empezar a tirar queries y crear tablas asi. 
+
+
+
+
+
+TODO:
+
+apache2 
+  SSL , hacer el sitio habilitando Secure Sockets Layer. Para hacerlo mas seguro.
+mysql 
+  instalar PhpMyAdmin para ver las cosas desde el navegador (creo que sirve para cunado no tenes acceso al servidor)   
+
+Herramientas:
+
+Magento 
+Zend Framework con el Zend server  

@@ -1,0 +1,28 @@
+Problemas al cargar
+
+herramientas utiles:
+
+-lshw: te lista lo que tu maquina ve como hardware
+-df Th: informacion de los discos y donde estan montados
+-fsck: verifica los discos y arregla los filesistems (le das fix a todo) 
+
+acciones utiles:
+-entrar en safe settings e ir haciendo de a una cosa por vez.
+-entrar en modo normal pero hacer Ctrl+Alt+<F1-F6> para ir a una terminal
+-correr un live pendrive para ver si los problemas son soft o hw. Si no tenes wireless podes tetherear con tu telefono por usb y eso va bien.
+
+
+Network:
+Me paso que se cago el wireless. Siempre decia airplane mode y se ve que ubuntu no cazaba el hw. Con el live pendrive tampoco anda el wireless (12.10) , si por cable. Al final no se bien como lo arregle entre un par de veces a safe mode y corri hablilitar el hw desde ahi.
+
+Video:
+Trata de ver los logs a ver si hay algo interesante (busca errores asi:$>grep EE /var/log/Xorg.0.log o lo mismo con WW (warniongs)) 
+
+Alternativas cuando no carga
+1) Iniciar con el live pendrive y copiar las configuraciones asi (pruebo copiando toda la carpeta):
+  cp -R /etc/X11 /flashdrive/backupConf/ (no copia links)
+  copio los links simbolicos en /xinit/xinput/ de la carpeta del sistema isntalado. (o sea, esos archivos los preservo) (los links son los que tienen nombres asi *_*
+
+)
+
+

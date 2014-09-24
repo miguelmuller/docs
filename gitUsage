@@ -7,7 +7,6 @@ Para acceder a la data en la nube (en los servidores de github) tengo que agrega
 
 Ahora podes hacer fetch para ese "remote" para traer la data. Pero recorda que el fetch te trae las branches (y crea referencias a las mismas) que hay en el "remote" y no te las mergea con las tuyas. Entonces podes hacer el merge vos o podes hacer pull.
   Un pull hace un fetch y ademas mergea las branches que fueron "trackeadas" (un clone "trackea" la master branch. "trackear" no es mas que hacer que se mergeen las branches cuando se hace un pull).
-  $ git remote show <nombre del remote>  te muest:qra como tenes configurado un remote para el pull y el push (que branches se mergean automaticamente)
 
 Pero... Que es una branch? 
   Una branch no es mas que un puntero a un commit. (para verlo como branch podes pensar como que en realidad la branch es el recorrido desde el primer commit hasta este commit, pero es lo mismo)
@@ -56,4 +55,60 @@ Tip:
 
 
 Ojo: 
-  No te vayas(git no t eva a dejar) de una branch en la que no commiteaste todos los cambios que ate interesa salvar, por que al irte de la branch se checkoutea otra y se pisa el working directory  
+  No te vayas(git no t eva a dejar) de una branch en la que no commiteaste todos los cambios que te interesa salvar, por que al irte de la branch se checkoutea otra y se pisa el working directory  
+  
+  
+Recordar
+  commit --all stagea automaticamente los cambios que status diria que tienen cambios pero que estan versionados(los tracked files). En este caso, versionados significa que el ultimo commit los incluye.  
+  
+  
+Ejemplo de uso:
+***Arreglando mi carpeta git.
+Pruebo como anda mi directorio .../terpsicoreWeb de desarrollo de la pagina
+entonces me pareo en el dir y hago 
+$>touch newfile.
+$>git add newfile (stagea al archivo (lo pone en la imagen del directorio que se va a snapshotear (congelar) cuando hagas commit)
+$>git commit -m "tests on git" (commitea un snapshot a la current branch (git status te dice en que branch estas)). El snapshot necesita estar linkeado a el ultimo snapshot de la branch (en cuyo working directory (o sea. El punto de partida para llegar a mi estado actual es. Hiciste checkout de una branch y copiaste en el working directory los archivos no versionados que venias arrastrando ) yo estaba parado cuando empece a hacer cambios))
+  => Siempre el equivalente a cualquier situacion en git es: "Hice checkout de una branch (me trae el ultimo commit (snapshot) a esa branch y agregue archivos y modifique otros."
+      Por ejemplo, si no cambie de branch (o sea, no checkoutie sino que commitie algo (ponele el commit535)) y vengo arrastrando algunos archivos en el working directory que no se commitean y modifique algunos que ya fueron commiteados en el 535 => mi situacion es equivalente a haber estado trabajando en cualquier otra branch, haber hecho: $>git checkout master (a la branch en la que trabajaba y comitie originalmente, la 535) y pegar los mismos archivos que arrastraba(no quedan addeados/versionados) al working  directory y hacer las mismas modificaciones sobre los archivos que eran modificados. 
+      Esto es por que se puede pensar como que cada commit guarda una version nueva del sistema de archivos (haciendo referencia al commit(o snapshot) anterior para no copiar cada vez todo). Los archivos no addeados nunca no estan en el sistema de archivos y por lo tanto , para la herrmaienta de commit no existen los que fueron commiteados de una manera en el monnit anterior, pero modficados en el actual deben ser addeados para que al hacer commit, sus cambios se guarden. O sea, el add pone los archivos en el staging area (imaginatelo) y la herramienta commit va al staging area, se fija que archivos de tu working directory vos le estas diciendo que cambiaron y se guarda estos archivos en forma de blob para hacer referencia a ellos en el snapshot que cree el commit. => cada commit tiene sus blobs (los archivos que estaban en el staging area) y un mapa de todo el resto no modificados no guardan su informacion en el blob del commit, sino que son referenciados del commit anterior (que puede estar referenciando archivos del commit anterior tambien) 
+      
+Para ver que archivos estan en el staging area, y que branch estoy actualmente uso
+$> git status
+
+
+Docs
+Lo anterior funciono. Ahora tengo un directorio con git instalado (se hizo git init) pero que no esta linkeado a mi repo en la nube
+
+Bueno ahora yo tengo mi branch bien limpita con lo que yo quiero en mi repositorio local: .git.
+Quiero subir el estado actual al repositorio en la nube (en los sevidores de github).
+
+Por alguna razon mi repo local no tiene el repo remoto origin configurado (el de la nube) entonces hago
+$> git remote add origin https://github.com/miguelmuller/docs.git
+y ahora 
+$> git remote show origin 
+me muestra que la url de fetch y pull son la que puse arriba para el remote origin
+me muestra la branch que es la head(la branch actual, a la que se esta comiteando) en el remote (master).
+me dice que hay un automerge de master a master (algo de unas references)
+Entonces pruebo
+$> git push origin (para subir mis cambios a la nube) 
+
+
+External Diff and Merge tools. 
+
+Aparentemente las merge tools de p4(perforce) son muy buenas. Me las bajo de la pajina (p4Merge) y para instalarlas solo hay que descomprimirlas en algun lugar que persista y hacer un link simbolico de  p4Merge en /usr/local/bin/p4merge.
+
+En /usr/local/bin tambien hay que crear 2 scripts wrappers (lo que esta en usr local bin es ejecutable como aplicacion por todo el mundo)
+> cat /usr/local/bin/extMerge
+#!/bin/sh
+/usr/local/bin/p4merge $*  (con todos los mismos arguentos que este script)
+
+> cat /usr/local/bin/extDiff
+#!/bin/sh
+[ $# -eq 7 ] &&  /usr/local/bin/p4merge "$2" "$5" (solo con los argumentos 2 y 5 pasados a este script)
+
+La idea es correr al diff y al merge con argumentos distintos. Es decir, git llama a los scripts siempre con los mismos 7 argumentos. Los scripts acomodan los argumentos (a diff, por ejemplo solo se le pasan los argumentos file-orig y file-modified.)
+
+ 
+
+  

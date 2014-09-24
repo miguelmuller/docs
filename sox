@@ -1,0 +1,116 @@
+sox. Audio army knife
+
+Notas:
+#Muchos de los resultados de las pruebas estan en la carpeta tests
+ojo q el sox numera desde 1 entonces hora cero corresponde a archivo 1, hora x a arcchivo x+1
+#Los resultados de splitear un arkaivo en horas estan en desguace. Los resultados de correr vad explicado 
+mas abajo estan en la correspondiente carpeta ./vad
+
+
+pruebo cosas: 
+
+((usage: sox infile.wav outfile.wav <effects>))
+((avanzado(si los archivos son raw (sin header q indique sample rate, bit-depth , etc) o si no se especifica una extension): sox <indicadores de parametros del archivo de audio infile> infile <idem archivo autifile> outfile <effeects> ))  
+
+hago sonar el synth :
+  En este caso el infile es null (el -c1 es para decir con q synth) y el outfile es -d (el device de audio de la maquina, salgo con ctl+c)  
+  ~> sox -n -c1 -d synth sin %-12 
+
+genero archivitos de audio de duracion 10 seg:
+  ~> sox -n -c1 gen1.wav synth sin %-12 sin %-9 fade 0.1 10 0.1
+  ~> sox -n -c1 gen2.wav synth sin %-24 sin %-18 fade 0.1 10 0.1
+  
+concateno ambos archivitos en uno solo:
+  ~> sox gen1.wav gen2.wav genTOT.wav
+
+hago sonar el archivito: 
+  ~> play genTOT.wav (idem sox genTOT.wav -d ) 
+  
+parto el archivito en distintas partes: 
+  Esto se entiende asi: aplico el afecto trim 0 7 (desde el ppio hasta el segundo 7) al audio de entrada genTOT.wav (dura 20 seg , 10 a un tono y 10 a otro) y lo que resulta de aplicar el efecto lo guardo en gen%3.wav. Termino el efecto trim por que a genTOT.wav le sobran 13 segundos sin trimear que son los q entran al proximo autput file (newfile). A esos 13 segundos q sobraron se le aplica el efecto trim 0 6 ( o sea, me quedo con los primeros 6 segundos) obteniendo un archivo gen001.wav q dura 6 segundos (3 seg de un tono y 3 segundos de otro)  
+  ~> sox genTOT.wav gen%3.wav trim 0 7 : newfile : trim 0 6   
+  
+uso sox para partir un archivo mega grande en distintas horas: 
+  ~$ sox 218.wav gen%3.wav trim 1:00:00 1:00:00 : newfile : trim 00:00:00 01:00:00 : newfile : trim  00:00:00 1:00:00 : newfile : trim 0:00:00 1:00:00 : newfile : trim 00:00:00 01:00:00
+error!: antes habia hecho esto:
+  ~$ sox 218.wav gen%3.wav trim 1:00:00 2:00:00 : newfile : trim 2:00:00 3:00:00 : newfile : trim  3:00:00 4:00:00 : newfile : trim 4:00:00 5:00:00 : newfile : trim 5:00:00 6:00:00
+para generar archivos  gen001 con el audio de la hora 1 a la 2 , el gen002.wav con el audio de la hora 2 a la 3 , etc... 
+pero estaba mal por q cuando uno hace trim, las posiciones son relativas a la anterior (la primera es relativa a tiempo 0) o sea que estaba seleccionando un audio de 2 hs en la primera, uno de 3 en la segunda, etc
+
+uso sox para partir un archivo grande en partes iguales: 
+  ~> sox infile.wav outfile%3.wav trim 0 60:00 : newfile : restart
+  
+uso sox para buscar voz en una grabacion:
+  ~> sox infile.wav ./vad/outfile.%3.wav vad : newfile : restart
+vad te trimmea al ppio hasta q encuentra el primer punto con voz   
+ERROR! no funca por q de la primera cadena de efectos no sobra audio file.  
+SOLUCION:
+puedo probar dandole no se , 10 segundos a cada vad finding asi: 
+  ~>sox infile.wav outfile.%3.wav vad trim 0 10 : newfile : restart 
+
+Modificador -S muestra el progreso
+
+Funciona casi perfecto: sos un genio!!! Explicacion:
+(pensa en cadenas de efectos (mira el man )) 
+aplico vad lo que me deja un archivo truncado para pasar por esta cadena (antes del :) 
+dp entra el trim q trunca ese archivo truncado al inicio en uno de 10 seg (desde donde se encontro el 
+primer vad + 10 seg) . El trim corta la cadena pero todavia queda un cacho de archivo para seguir a la 
+proxima cadena. La prox cadena es un newfile y un restart, es decir , repite  lo mismo para lo que quedo de
+archivo de audio (todo menos lo que habia antes del vad y 10 seg dp) y graba la salida en un arrhcivo nuevo. 
+Asi termino teniendo muestras de 10 segundos de mi infile.wav en los puntos donde vad hizo un detect.!!! 
+Nota:Como una mejora podes normalizar antes
+
+Para reproducir, vas a la carpeta vad correspondiente al arhivo de 1 hr y le das 
+  ~>play * 
+(esto te reproduce uno atras del otro, y en un segundo te tira todo lo que queres escuchar y mas perfectamente resumido ) 
+
+
+Entrada y salida de pipes: 
+
+opcion "-" : Usar stdin como infile
+No puedo hacer: 
+  ~$ anohter-program-q-saca-un-mp3-al-stdout | sox outfile <effects> 
+por que sox espera q especifique archivo de entrada y salida =>
+  ~$ another-program-q-saca-un-mp3-al-stdout | sox -t - outfile <effects>
+  
+opcion "|<program> [options] " : usar como infile la salida del programa con sus opciones.
+
+uso de "wildcard-filename": o sea si uso el wildcard entre "" hago q sox expanda en lugar del shell. Esto puede ser util aca:
+  ~>play --rate 6k *.vox
+will be expanded by the `shell' (in most environments) to
+  ~>play --rate 6k file1.vox file2.vox file3.vox
+which will treat only the first vox file as having a sample rate of 6k.
+With
+  ~>play --rate 6k "*.vox"
+the given sample rate option will be applied to  all  three  vox files.
+
+opcion "-p" : poner la salida en stdout en lugar de un outfile
+
+Un efecto se aplica a un archivo de entrada desde ppio del archivo de entrada hasta un determinado momento (ej: trim 0 t ) y eso es lo que se guarda en outfile.wav. con lo que queda del archivo de entrada puedo aplicar otro efecto cuya salida se va a guardar en otro archivo de salida si uso la forma  
+~> sox infile.wav outfile.%3.wav <effecto-finito1> : newfile : <efecto2>
+esto se puede loopear asi 
+~> sox infile.wav outfile.%3.wav <effecto-finito1> : newfile : restart
+donde restart es aplicar el efecto-finito1 a lo que quede de la vuelta anterior de aplicarlo  
+
+
+vad actua sobre todo el infile por q cuando detecta copia al outfile 
+ 
+si aplico 
+vad duplicar-archivo(post vad) trim tamaño archivo oirginal
+
+
+ANEXO : 
+grabar desde la compu (mirar /Documents/tmp/start_env_mon_at
+
+arecord -f cd -t raw | oggenc – -r -o out.ogg
+
+LEGACY: esto es para correr el archivo splitteado con vad pero sin el manejo de arriba , para el corrido una sola vez, uso el tamaño del archivo para reproducir un poquito antes del evento y un poquito despues y amplificandolo
+919  play ./../rec218gen006.wav trim  -00:54:35 -00:54:25 vol 6 dB
+
+
+
+status: 
+
+hice 006 y 007 y en 6 encontro y en 7 no . segui probando desde aca en adelante (proba tb con 005) 
+pongo arec a correr 6 hs 
+

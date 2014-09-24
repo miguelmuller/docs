@@ -1,0 +1,930 @@
+﻿SHELL
+
+
+Para ver el manual de cualquier comando:
+man <comando-q-me.interesa> 
+
+
+Listar algo (archivos, info del sistema, etc)
+ 
+ ver archivos ocultos,  sus permisos y su size 
+  ls -lah  (argumentos son list(en forma de lista), all(hidden) , human-readable)
+termino viendo algo asi:
+drwxrwxrwx <numerito?>  <owner> <group> <size> <last mod date> <file/dir>
+si quiero cambiar el owner tengo que hacer 
+  sudo  chmod  XXX <archivo a cambiar>
+  sudo  chown <usuario-a-convertir-en-owner-del-file> <archivo-o-dir-a-cambiar> (cambiar permisos a un dir permite mover archivos y esas cosas)
+  sudo chgrp <usuario/grupo-a-convertir-en-group-del-file> <archivo-o-dir-a-cambiar> 
+          
+Cambiar permisos (el 7 es un numero hexa que representa los 3 bits asociados a rwx para cada usuario <owner|user|group>)  (verificar esto)
+chmod 777 <archivo o dir> 
+
+
+Para cambiar owner (ver usage)
+chown 
+
+
+Para ver logs a medida que se va logueando
+tail -f <miarchivodemierda>
+
+
+Links simbolicos (ver usage) 
+ln -s <file-o-dir-a-linkear>  
+esto crea un symbolic link (no necesita ver al archivo real) . El simbolic es el que sirve para cuando haces un link a un file q esta en otro dev ( disco, etc) 
+   argumentos...
+                ln -sf   (fuerza la operacion) 
+                ln- sfn  (sin desreferenciar (links para directorios) 
+
+
+
+
+tamaños de carpetas
+du -sh  (tamaño que ocupa el directorio actual )
+du -sh ./* ( tamaño de todas las cosas en el directorio actual. (equivalente a= ls -lah ) )
+
+
+Discos y particiones 
+sudo fdisk /dev/sda  (sda es el disco cuya partition table quiero editar) 
+df -Th  ( te muestra q discos estan montados donde, y con que particion. Tambien muestra el uso de los discos en  %. muy piola)
+sudo gparted (interfaz grafica para editar las particiones)
+
+
+
+
+Navegacion
+si haces...
+cd 
+vas al home directory de una 
+cd -
+vas al directorio anterior de una
+
+
+
+
+history
+te muestra los comandos ejecutados ultimamente y les asigna un numero...
+history | grep <pedazo de comando de tu interes>
+asi lo podes ejecutar... 
+!<numero de comando asignado por history> 
+
+
+Reversi-i-search...
+Ctrl+R
+tipeas algunas letras de lo q estas buscando... Return y lo ejecuta
+si queres que siga buscando apariciones anteriores es devuelta Ctrl+R 
+
+
+Rename
+For example rename all *.bak file as *.txt, enter:
+$ rename .bak .txt *.bak      ( reemplaza .bak por .txt en todos los arcuivos de tipo *.bak        )
+Ojo! 
+el rename que tengo en ubuntu me pide expresionesRegulares
+o sea, seria asi el ejemplo de arriba $ rename ‘s/\.bak/\.txt/’ *.bak
+
+
+INFORMACION DEL SYSTEMA / ARCHIVOS
+Imprime informacion del sistema , version de ubuntu y esas cosas :
+uname 
+man uname  (ahi ves que uname -r es el release del kernel y uanme -i es la plataforma de hardware) 
+informacion de hardware
+lshw (si no esta sudo-apt-gettealo) 
+
+
+Para ver la version de ubuntu:
+lsb_release -a 
+
+
+Para misc informaciones:
+head /proc/cpuinfo 
+head /proc/version
+head /proc/meminfo
+head /proc/swap
+
+
+info sobre un archivo:
+file <nombre del archivo>
+
+
+COPIA BINARIA
+dd copia binaria 
+$ dd if=<device de entrada> of=<archivo o device de salida> bs=<block size>
+(ie: $ dd if=/dev/sdc of=/home/michael/diskBackup/androidadvance.iso bs=1MiB)
+para ver el avance 
+buscas el pid del dd ($ pgrep -l '^dd$')
+mandas la señal USR1 con kill ($ kill -USR1 <pid>)
+
+
+uso de dd para crear un filesystem virtual (interesante resumir y sacar link)
+http://superuser.com/questions/573415/use-losetup-and-dd-to-make-filesystems-images-ready-to-be-deployed
+
+
+
+
+CATTEAR un archivo binario en hexa
+od -t x1 ~/Downloads/migue.bin
+
+
+
+
+LIBRERIAS
+
+
+Problema 1:
+El loader de linux no encuentra la libreria que usa el ejecutable que quiero ejecutar(aunque esta en un path especificado)
+Solucion : lo invoco asi...
+LD_LIBRARY_PATH=<ruta a la libreria lib*.a> ./<ejecutable>
+
+
+
+
+Problema 2: tengo un makefile que crea objetos y dp los linkea a todos juntos en una regla final 
+en esta regla linkea con una libreria estatica tambien (lib*.a) (es un conjunto de .o�s). Cuando quiero correr el make para que compile me tira error en esa 
+libreria que no encuentra ciertos simbolos. O sea linkeando contra la libreria no alcanza sino que tengo q incluir ademas las dependencias de esa libreria estatica 
+en el linkeo.
+
+
+algo que puede ser util es: 
+nm (el binario ) y te tira la lisata de simbolos referenciados o definidos en ese binario y te dice cuales estan deinidos aca o no
+
+
+Este comando te tira info sobre la libreria o ejecutable (incluyendo si esta compilado en 32 o 64 bits)
+file lib*.a 
+
+
+
+
+MAKEFILES
+
+
+ok un par de cositas nuevas
+
+
+muchas veces declaran varias variables y dp queres ver como las usan en una regla de compilacion (  $(CXX)  ... ) pero OJO!
+puede que si haces un search en el makefile no encuentres que la usen pero que efectivamente se este usando por que puede q el makefile que estas viendo 
+incluya a otro makefile.
+
+
+Pueden haber varias alternativas de makefiles (por ejemplo si queres uno para 32 bits , uno para 64 , etc) 
+en este caso se los invoca asi 
+
+
+make -f make64.mk   
+
+
+(se le dice -f y el archivo make que quiero correr. (fijate que terminan en .mk)) 
+
+
+resumen. Si queres ver donde se usa una variable y un search en el archivo actual no la encuentra podes hacer un search a .mk y ver si esta en esos archivos incluidos
+
+
+
+
+En el make de commerce system (make64.mk) (equivalente al Makefile pero para 64 bits)
+
+
+fijate:
+
+
+LIBRARY_DIRS=$(LIB_OUTPUT_DIR) $(DEP_DIR)/AuthSystem/lib $(DEP_DIR)/Taxware/lib $(DEP_DIR)/HandleSystem/lib $(DEP_DIR)/RRNSystem/lib $(UTILS_DIR)/SoeMon3AgentAPI/monapi/lib $(UTILS_DIR)/XMLLibrary/libxml
+
+
+contiene donde estan las librerias . Supongo q sera usada en la parte de linkeo para buscar las librerias.
+No esta AES por lo que seguro las busca en LIB_OUTPUT_DIR, que es una variable q apunta a una carpeta dentro de commerce system que es donde 
+pone serguro las librerias que el  make compila. Seguro entonces que AES la compila de fuentes segun la regla
+
+
+Por mas que las compile propias , tb le tiene q decir al linker que las incluya -> tambien hay un 
+
+
+LIBRARY_FILES=PaymentGatewayAPI_64 TcpLibrary_64 AuthAPI_64 HandleAPI_64 RRNAPI_64 AES_64 TaxClientAPI_64 ReDServerClientAPI_64 CardProviderAPI_v1_64 UnitTest++_64 SoeMonApi3_64 xml2 pthread SHA256_64 crypto64 CyberArk_64 cpasswordsdk protobuf activemq-cpp $(SONICMQ_LIBS)
+
+
+y aca esta AES que es la
+
+
+(encontre un error en el make de AES en LIBRARY_FLAGS que incluye LIBRARIES (que no existe) y deberia incluir LIBRARY_FILES )
+
+
+----------------
+
+
+2 flavours of variables 
+
+
+en make hay 2 formas de definir variables , con = y con := 
+
+
+La de = siempre expande las variables q contiene.
+la de  := hace lo siguiente...
+
+
+it contains their values as of the time this variable was defined. Therefore,
+
+
+     x := foo
+     y := $(x) bar
+     x := later
+is equivalent to
+
+
+     y := foo bar
+     x := later
+-----------------------------------
+Correr 
+  $> make 
+corre la primera regla que aparece y nada mas
+-----------------------------------
+
+
+Las reglas siempre esperan un tab al comienzo de la primera isntruccion.(despues de los prerrequisitos) => Usar tabs (no expandir los tabs a spaces (OJO VIM usar set noexpandtab))
+ 
+
+
+-----------------------------------
+Debuggear facil:
+
+
+haces una regla de nombre por ej asi...
+status:
+                @echo 
+                @echo el valor de la variable VAR es:
+                @echo $(VAR)
+                
+y la pones como prerequisito de alguna q se este ejecutando
+
+
+------------------------------------
+rules mas comunes:
+
+
+(Podes ver el archivo que hiciste para sony para buildear el test de AES. el hibrido )
+
+
+
+
+
+
+
+
+SCREEN
+
+
+Para entrar a una screen...
+screen   
+
+
+Para salir de una screen ...
+exit
+
+
+Para ver que screens hay abiertas...
+screen -ls 
+
+
+Para detachearte de una screen...
+Ctrl+a d    (lo que estabas corriendo queda corriendo de fondo)
+
+
+Para reatachearte a una screen...
+screen -r <nombre de la screen que te da screen -ls> 
+        Nota: para hacer esto sin tener q tipear la sreen name q en general es una paja, hace esto. SCRN=$(screen -ls | grep Detached) (si hay una sola va a guardar la linea de ls en la variable SCRN) dp haces...
+                 screen -r $SCRN
+
+
+
+
+Para adherirte a una screen no Detacheada...
+screen -x <nombre de la screen que te da screen -ls>
+
+
+regions...
+Para splittear la pantalla...
+dentro de una screen  Ctrl+a  S
+Para remover una region (no altera la screen que esta en esa region)
+dentro de la region Ctrl+a X 
+Para cambiar el tamaño de la region
+Ctrl+a : resize +/-<Numero de lineas a aumentarle, decrementarle a la region actual> 
+
+
+Para alternar entre las splits de la pantalla
+Ctrl+a Tab
+
+
+Para crear una nueva screen...
+Ctrl+a c
+
+
+Para moverte a las distintas screens...
+Ctrl+a <numero de la screen>
+
+
+Scrollback buffer...
+Scrollear el buffer en una screen... 
+Ctrl+a [    (Alternativa : Ctrl+a Esc)
+                                                                                          k
+                                                                    (y te moves con h       l ) 
+                                                                        j
+
+
+Copy y Paste en los registros de screen
+Se puede escribir a el registro “a” con 
+Ctrl+a : register a <arbitrary text>
+Se puede recuperar ese string con 
+Ctrl +a : paste a 
+
+
+Copy en el scroll back buffer...
+(es como un modo visual del vim pero se abre y se cierra con spacebar) 
+spacebar, moverse por sobre lo que queres copiar, spacebar
+Para pegar...
+Ctrl+a ]                                                                
+o Ctrl+a : paste . 
+
+
+                                                                
+Para setear e numero de lineas on the fly para una ventana en particular...
+Ctrl+a : scrollback <num>
+                                        
++ COMODIDAD
+Para ver las ventanas abiertas en este instante
+Ctrl+a " 
+
+
+Para cambiarle el nombre a la ventana actual
+Ctrl+a : title <titlulo deseado>     /      tambien se puede Ctrl+a A <titulo deseado>
+
+
+Para crear una ventana con un titulo especifico 
+Ctrl+a : screen -t <titulo deseado>
+
+
+Para cerrar una ventana (2 alternativas)
+1-Cierro el programa que corre (bash en general, escribiendo exit en el command line) entonces la ventana se cierra automaticamente
+2- Ctrl+a : k
+
+
+Para cerrar todas las ventanas 
+Ctrl+a : quit
+                                        
+                                                                        
+CUELGUE SCREEN!!!
+
+
+Si apretas: Ctrl+S (accidentalmente en general) se cuelga la pantalla !!! y tengo q cerrar putty y todo mal , (volver a atachearme dp y todo eso) 
+no es un BUG. Ctrl+S es un feature del terminal (del shell) 
+ "Ctrl-s calls the software flow control method XOFF which stops the character flow to the termina"
+Si apretas Ctrl-q entonces llamas a XON y vuelve a entrar flujo a el programa (en este caso screen no recibia el flujo de caracteres por eso tampoco 
+funcionaba Ctrl-a y no le podia decir nada a screen )                                                                         
+WARNING SCREEN:
+
+
+No uses programas que necesiten conectarse con el servidor X11 por que no va a andar a menos que hagas alguna magia que no se todavia ...                
+
+
+CONFIG
+
+
+el archivo de configuracion es /etc/screenrc. Se puede setear para que te cargue una cantidad de ventanas con numero id y comandos asoiados seteables.
+
+
+  ### Put pass in (very unsecure) a register
+  register p "Laburo@52"
+
+
+  bind p paste p # spit out the pass"
+
+
+  # ------------------------------------------------------------------------------
+  # STARTUP SCREENS
+  # ------------------------------------------------------------------------------
+
+
+
+
+  chdir /
+  screen -t root 0 sudo su
+  chdir /var/log/theia/
+  screen -t error_log  10 tail -f PHPConfigSAR-error.log
+  screen -t access_log 11 tail -f PHPConfigSAR-access.log
+  chdir ~/dev/
+  screen -t mysql 6 mysql -uroot -p configsar
+  screen -t php 7 php -a
+  chdir /media/truecrypt1/InvapConfigSAR/trunk/
+  screen -t run 1
+  screen -t "edit code" 2
+  screen -t compile 3
+  screen -t svn 5
+  screen -t "mysql dump" 8
+  screen -t "run kdevelop" 9 sudo kdevelop
+  screen -t "search for code" 4
+
+
+
+
+
+
+
+
+                                        
+                                                                        
+GDB
+
+
+(Si queres usar gdb, tenes que compilar con la flag -g )                                                
+abrir gdb
+gdb
+
+
+decirle que archivo correr
+gdb> file <nombre del ejecutable>
+
+
+poner un breakpoint en alguna funcion (tb se puede con numero de linea como en el visual: break filename:linenum (si no especificas filename es el current))
+gdb> break <nombre del metodo o funcion >
+
+
+empezar a ejecutar el programa (tb sirve para resetear la ejecucion)
+gdb>run
+
+
+ejecuta la proxima linea en el codigo (creo , habla algo del stack frame)                        
+gdb> next 
+
+
+meterte en una funcion
+gdb> step
+
+
+salir de una funcion
+gdb> finish (ojo , no uses 'f' por q es para "frame" y confunfde. Pone fin por lo menos)
+
+
+mostrar la linea q se va a ejecutar (dp de un next en general la muestra. pero si hiciste otras cosas entonces usa este
+gdb>frame
+
+
+ver el codigo alrededor de lo que se esta ejecutando
+gdb>list
+
+
+Salir de gdb
+gdb>q 
+
+
+con esto podes evitar que step entre en algunas funciones (podrian ser las basicas de c++ q rompen las bolas) (esto se podria poner en .gdbinit) 
+gdb> skip
+                                        
+con el archivo: ".gdbinit" le podes dar las instrucciones q queres que corra cuando inicia (lo guardas en el dir del ejecutable) podes setear variables de entorno q se necesiten, el file a correr y breakpoints. 
+podes ponerlo todo en un define asi cuando inicia gdb cargas las instrucciones y las ejecutas cuando queres.
+
+
+Cosas generales: 1-podes reemplazar muchas instrucciones por la primera letra (ej: next = n . skip = s . finish = f . ) o por las primeras 2 si solo l a primera es ambiguo
+                                 2- si pones un numerito dp podes repetir muchas veces el comando. (ej: n 15 ; ejecuta las proximas 15 lineas de codigo) 
+
+
+IMPRIMIR ELEMENTOS DE STL CONTAINERS (IE: VECTOR)
+p *(mi_vector._M_impl._M_start)@mi_vector.size()         (puntero interno a los elementos del container@cantidad de elementos a imprimir)                 
+otro camino, si se trata de punteros es hacer p mi_vector y copiar las direcciones de memoria y castear a lo que sean.
+
+
+FUNCIONES INLINE (no esta probado)
+si no estas pudiendo correr algo por q es inline, podes modificar la compilacion para q las considere como no inline
+
+
+
+
+BREAKPOINTS EXTENDIDO
+gdb> info breakpoints    / mas rappido: gdb>i br
+te muestra los breakpoints actuales y el numero que se les asigna
+
+
+gdb> disable breakpoints <numeros separados por espacios>
+los deshabilita         / mas rapido:   gdb> dis br
+
+
+--Archivo de configuracion: “.gdbinit”
+ejemplo:
+
+
+define zetenv
+  file output/bin/testbench-SSG
+#break SSGParameters::makeBINTable()
+  break SSGParameters::setTRMMode(unsigned short)
+  break SSGParameters.cpp:131
+end
+
+
+
+
+
+
+MULTITHREAD EXTENDIDO
+gdb> info threads    / mas rappido: gdb>i th
+te muestra los breakpoints actuales y el numero que se les asigna
+
+
+gdb> threads <numero de thread asignado por gdb (ver i threads)>
+ cambias a ejecutar el thread cuyo numero es el seleccionado
+ 
+ 
+ 
+VIM (% reemplaza el nombre de archivo actual)
+en Vim tenes varios modos:
+
+
+el modo normal (te podes mover, copiar y pegar lineas y palabras y lo que quieras pero no insertar texto desde el teclado. Para grabar con un nombre o salir de vim sin grabar tenes que estar en este modo. Tenes dosformas de dar instrucciones en este modo, con teclas especificas o con comandos (:<comando> + Enter ) )
+        para entrar en el modo normal desde otro modo apretas ESC
+el modo insert (Te permite moverte e ingresar texto )  
+        apretando 'i' desde el modo normal. Salis con ESC
+el modo visual (te permite seleccionar texto y copiarlo usando 'y'. Dp podes pegarlo usando p desde este o el modo normal) 
+        apretando 'v' desde el modo normal. Salis con ESC
+el modo block visual (te permite seleccionar blockes y copiarlos o hacer mas cosas locas ) 
+        apretando 'Ctrl^v' desde el modo normal. Salis con ESC
+        por ejemplo: Insertar texto al principio de muchas lineas...
+S        
+        
+MODO NORMAL
+  ( en modo normal, al escribir comandos...
+                                                                % reemplaza el nombre de archivo actual
+                                                                . reemplaza la posicion del cursor
+                                                                $ es el din del archivo                )
+  
+
+
+Para grabar...
+:w <nombre del archivo>     (no hace falta q este el nombre del archivo)
+
+
+Para salir sin grabar...
+:q!                         (sale aunque haya algo en el buffer( hay modificaciones al archivo)
+
+
+CORTAR Y PEGAR...
+borrar una linea(cortar): Parate sobre la linea a borrar...
+<n>dd (donde n es el numero de lineas a cortar)
+<n>dw  (cortar la palabra)
+d$ (elimina desde donde estas parado hasta el fin de la linea)
+
+
+para copiar texto...parate en la primera linea que queres copiar...
+<n>yy    (donde n es el numero de lineas a copiar)
+o parate en la primera de las palabras que queres copiar...
+<n>yw   (yank word) 
+
+
+Para cortar, copiar texto. (Comando del tipo :<comando> ) 
+:<numero de linea del comienzo>,<numero de linea final><d o y segun quiera cortar o copiar>
+ejemplo
+:5,7d    (elimina desde la linea 5 a la 7) 
+:.,$d    (elimina desde la posicion del cursor actual hasta el fin del archivo)
+
+
+para pegar texto. parate en una linea por encima de donde queres que se pegue...
+p
+
+
+Para buscar texto...
+/<texto a buscar>    |   o podes usar sino...   ?<texto a buscar>  (busca para atras)
+
+
+Para buscar y reemplazar texto... (search and replace)
+:%s/<texto a buscar>/<texto con el que reemplazar>/gc       (esto es :%s es como :s (substitute usando reg exp en esta linea) para todas las lineas . el resto es la reg, exp. .  'c' es para q pida confirmacion antes de reemplazar)
+   Si quiero q lo haga desde la linea a hasta la b, uso 
+   :<numero de linea a>,<numero de linea b>s/<texto a buscar>/<texto con el que reemplazar>/gc
+      Si quiero desde la linea actual hasta el final
+      :.,$s/<texto a buscar>/<texto con el que reemplazar>/gc
+          
+Para correr un comando de shell desde vim sin tener q salir del archivo
+:shell <comando>     |        o sino podes usar... :!<commando> 
+
+
+Para ver la consola ampliada... (te podes meter a modificar entrando en -INSERT- mode)
+q: 
+
+
+Navegacion
+Numero de linea...
+:<line number >
+para ir al ppio...
+1G 
+para ir al final...
+G
+
+
+SETTINGS
+
+
+Para ver los numeros de lineas 
+:set nu
+(:set nonu los desactiva)
+Para setear autoindent y tabs como 2 espacios y un par de cosas mas.
+:set ai et sts=2 sw=2 tw=80
+
+
+
+
+
+
+        MULTIPLES ARCHIVOS EN VENTANAS DE VIM
+
+
+  Para abrir multiples archivos en una sesion de vim (ta piola para copiar entre archivos de forma practica)...
+  :e <nombre del archivo>
+     Truquito: para browsear archivos que queres abrir hace...
+         :E  (Browseas el directorio actual de manera mas comoda, con Return los abris) (para salir de este modo podes hacer :b<numero de algun buffer>
+  
+  Para moverte entre archivos...
+  :bn (moverte al proximo) :bp (moverse al anterior) 
+
+
+  Para cerrar uno de estos archivos...
+  :bw
+
+
+  Para ver cuales estan abierto
+  :buffers
+        (con :b<numero> te moves al que tiene el numero q se ve en :buffers)
+  Alternativa + corta!!!
+  :ls
+  
+  Para cerrar una ventana
+  :bd
+  
+  Para conocer el archivo q esta abierto
+  :o
+  
+  Para abrir el archivo bajo el cursor
+  gf
+  
+  
+
+
+  
+FIND
+
+Buscar Archivos 
+
+find, el usage basico es 
+
+find <directiorio donde buscar> -name <nombre del archivo a buscar> 
+
+
+o sea , si haces ~$man find    ves que se usa asi: find <algunas opciones> <directory> <expression>. La expression puede ser varias cosas, esta c ompuesta de 3 cosas
+1.options (por ejemplo cambiar el tipo de regexp que se este usando),
+2.tests
+3.actions  Si  no hay actions, se asume print como action y te uestra el archivo si lo encuentra...
+
+
+
+
+Buscar texto en archivos (para ver donde se usa un codigo en un proyecto grande)  
+
+
+find -name "*.cpp" -or -name "*.h"  -print0 | xargs -0 grep '<texto a buscar>' -l &> find_results.txt
+(ojo que el print0 vaya atras de todo en find. Por ahora esta andando mal esto, fijate con la que sigue (sin el print0 y el xargs (el print0 me esta filtrando resultados)))
+ find -name "*.cpp" -or -name "*.h" | xargs grep 'setHeader' -ls
+
+
+Tambien se puede hacer esto de manera rapida 
+
+
+grep -lr “<expresion_a_buscar>” . 
+
+
+la opcion -l imprime los nombres de los achivos q contienen matches. -r busca recursivamente en todos los directorios debajo del actual.
+
+
+uno para buscar archivos en makefiles (te sirve para ver donde se usa un archivo fuente en una carpeta compartida, (en que proyecto)) (correlo desde el directorio padre para abajo)
+find -name "Makefile" -or -name "*.mk" | xargs grep -l <nombre del archivo a ubicar>
+
+
+XAGRS tb se puede usar asi...
+xargs rm < /tmp/list (para eliminar archivos q estan en un lista)
+
+
+
+
+
+
+TAR (DEPRECATED, USAR CPIO)
+comandos basicos:
+extraer de un .tar
+tar -xvpf <nombre del fichero>
+comprimir a un .tar
+tar -cvf
+
+Opciones de tar: 
+  -x extract
+  -c create 
+  -f siempre va al final es por que tar espera un -f antes del archivo a usar para comprimir o para descomprimir
+  -v verbose
+  -p preservePermissions
+
+
+CP
+copiar una carpeta de un lado al otro. 
+Me paro (adenrto de dest folder) donde quiero tener mi carpeta y hago
+cp -r ./path/to/source/folder/SourceFolder ./
+esto me deja la carpeta SourceFolder en el directorio actual (destFolder)
+
+CPIO (ver en.wikipedia.org/wiki/Cpio)
+es un programita que tiene 3 modos 
+copy-out (-o):
+  Recibe una lista de archivos (incluyendo directorios) y los concatean uno atras del otro en un archivo grande (archive)
+  ejemplo: $> find . -depth -print | cpio -o > /path/archive.cpio
+copy-in  (-i):
+  Toma un archive y lo lee y va recreando el directory tree que arhivaste
+  ejemplo: $> cpio -i -vd < archive.cpio   (la -d es para construir directorios cuando es necesario)
+  ejemplo: $> cpio -i -d etc/fstab < archive.cpio
+pass   (-p):
+  Combina las opciones -o y -i. Toma el directorio donde escribir como argumento. Sirve para copiar directorios
+  ejempo: $> find . -depth -print | cpio -p -dumv new-path
+
+CPIO + GZIP
+Si quiero comprimir un directorio, lo que puedo hacer es
+$> find . -type -f -name '*.sh' -print | cpio -o | gzip > sh.cpio.gz
+Esto lo que hace es mandar al archivo stdin una lista de archivos (aca solo incluyendo archivos regulares por quefiltro todo lo demas (con la opcion -type f) pero normalmente va a copiar tambien archivos que representan directorios (todo en linux son archivos)). Luego, ejecuta cpio tomando como file de entrada ah el stdin (entre pipes, estoy ejecutando cpio en su modo output. Cpio necesita recibir 2 argumentos: un archivo con una lista de archivos para concatenar y un archivo de destino. En este caso no se provee ninguna de las dos por lo que los que se usan son stdin y stdout) y escribiendo al stdout. Luego se gorre gzip sobre el archivo todo concatenado que se escribio al stdout y que se redirecciono al stdin debido al pipe. 
+=> Entendiendo como funciona:
+  Find no le da bola al stdin y escribe al stdout. Como esta el pipe, el stdin de cpio es el stdout de find. (pensa en como funciona el stdin cuando se toma del teclado. (es como en real time, valor que agrego, valor que entra el programa. Puedo despues seguir agregando). Por esta razon en paralelo se estan calculando y encontrando los nombres del find y agregando al archive (find lo hacer ordenadamnete).  Una vez que se crea todo el arhivo todo junto se pasa como stdout de cpio y stdin de gzip todo el chunk de archivos todo junto. gzip agarra ese chunk y lo comprime y lo escribe comprimido a un archivo.
+
+
+ 
+
+
+
+
+
+SSH / SCP
+
+
+loggearte en otra maquina 
+
+
+ssh mmuller@lvn-snp-prbld02.sonynei.net 
+(te pide la pass)
+
+
+mover archivos de un usuario a otro 
+scp mmuller@lvn-snp-prbld02.sonynei.net:/nav/mmuller/rhel6/NAV/utils/Resources/Testing/build-gcc/make64-http.mk make64-http.mk.copied
+
+
+
+
+DEVELOPMENT CON SCREEN
+
+
+Esquema de desarrollo en hudson
+
+
+0 view logs  (SonicMQ/Testing/build-gcc/logs/10-22-12 ... hacia cat * para ver todos los archivos de logging)
+1 gdb   (SonicMQ/Testing/build-gcc ... gdb - set_env (del .gbdinit) - q (para salir de gdb dp de compilar o modificar breakpoints) )
+2 view code ( SonicMQ/Testing vim *.cpp *.h (tner todos los archivos abiertos en vim para verlos y modificarlos a piacere)
+3 put .gdbinit (/SonicMQ/Testing/build-gcc ... vim .gdbinit desde donde se corre el gdb. Es para ir poniendo y sacando breakpoints y variables de entorno)
+4 compile (/SonicMQ/Testing/build-gcc ... me hice un scripcito ./rebuild.sh q no hace mas q :
+                                                                                                                                                                                        make -f make64.mk clean &> makeout.com
+                                                                                                                                                                                        make -f make64.mk all &> makeout.com
+                                                                                                                                                                                        vim makeout.com        )
+NICE TO HAVE : development
+
+
+en vim tener los paths donde busca archivos synqueados con los del makefile q se vaya a estar trabajando
+Word completion desde ya
+
+
+
+
+OTROS LABUROS
+
+
+Dreamworks: globant
+
+
+qt
+boost  (que use yo de boost,  algunas para callback, smartPtr y format)
+c++
+opengl
+
+
+(yo trbaje con todo esto) 
+(la entrevista es ver mas o menos q conoces de eso)
+
+
+
+
+empresas de software de audio en alemania!
+parece q hay varias super interesantes.
+abletone (hambburg) (o algo asi)
+nativeInstruments (berlin)
+
+
+
+
+
+SOX
+Improved line to find speech in audio using sox. (try lowering time constant -T to 0.25 again)
+sox h7.wav h7.%3.wav -S -V3 vad -t 1 -T 1 trim 0 2 : newfile : restart 2>timestamps.txt
+
+
+CHROOT
+
+https://wiki.archlinux.org/index.php/Chroot
+chroot brak out of jail
+http://www.bpfh.net/simes/computing/chroot-break.html
+
+
+http://www.symantec.com/connect/blogs/monitoring-android-network-traffic-part-i-installing-toolchain
+
+
+Info sobre DISCOS.
+
+Para saber que discos hay registrados por el kernel
+df -h
+Para saber en que disco estoy parado
+df -h . 
+
+
+Discos 
+Los discos tienen lo que se llama mbr. 
+byte 0 el bootstrap code area (lo que va a linkear a un bootLoader) de 446 bytes (en sectores?)
+byte 446 PartitionEntry1 tamaño 16 bytes
+                                0: status byte (bootable/) (1byte)
+                                1: CHS (cylinder head sector) Address of first absolute sector of partition   
+                                4: partition type (1byte)
+                                5: CHS last absolute sector
+                                8: LBA Adress (adressea por bloque) 32 bits? (La abstraccion de pensar por bloques y asi independizarse del odioso CHS que solo sirve para discos rigidos con cylindros cabezas y sectores)
+                                9: Number of sectors in partition
+    
+1Byte Status
+
+
+DD
+skip es de lo que estoy copiando (de lo que estoy recibiendo) (if) y seek es en lo que estoy escribiento(of)
+
+Meto el usb y el sistema lo lee como /dev/sdc
+-para copiar todo el disco
+dd if=/dev/sdc of=pen.iso
+-para copiar una particion
+dd if=/dev/sdc1 of=penFirstPartition.iso
+-para copiar la partition table
+dd if=/dev/sdc of=partitionTableSdc.bin bs=1 skip=446 count=64
+-para restaurarla 
+dd if=partitionTableSdc.bin of=/dev/sdc bs=1 seek=446 count=64
+
+Aparentemente casi todos los discos tienen sector size 512 bytes.
+
+Ya hice una copia de mmi mbr. Puedo boletear el penddrive e instalar ubuntu. No lo Baje!!!
+
+AHHHH LA CONCHA DE TU MADRE!!!
+Asi funciona esto: 
+El Mbr del fisical drive tiene 
+0   -  boot code / 446 Bytes
+446 -  partition table /  16 * 4 Bytes = 
+510 -  boot signature / 2 Bytes
+
+Cuando se "instala una mbr" se escribe una cosa asi en el offset 0 de memoria. En el lugar del boot code se escribe un programa que escanea las particiones de la tabla de particiones que esta mas abajo (que tiene posiciones de memoria y flag de activo  de las 4 particiones posibles*) y busca que haya una unica con la flag de activa. Cuando la encuentra (o sea supongo que salta ante la primera pero es para researchear...) carga una cantidad determinada de memoria de esa particion (a esto se le llama chain loading) que se llama el vbr (o sea lo analogo al mbr pero para el volumen (o particion) o sea almacenado en la primera posicion del volumen o particion, el codigo que maneja creo que es el mismo por que se lee igual que el del boot code del mbr ) 
+
+
+Links interesantes 
+http://www.tldp.org/LDP/intro-linux/html/sect_03_01.html
+
+
+http://tldp.org/HOWTO/Partition/fdisk_partitioning.html
+
+Este manual explica como instalar undebian a un pendrive (debian es la base de ubuntu)
+  https://www.debian.org/releases/stable/i386/ch04s03.html.en
+
+Lo que hace es:
+    -crea una particion fat16 con fdisk /dev/sdX  (Pone la flag de booteable! y crea una particion con tipo FAT16 (codigo hexa=6))
+    -instala una mbr en el pendrive (creo que con fdisk lo puedo hacer) 
+      install-mbr /dev/sdX
+    -crea un filesystem (asi le puedo escribir al pendrive)( Importante haber creado la particion con fdisk antes) 
+      mkdosfs /dev/sdX1
+
+    -instala syslinux en el pendrive (syslinux es un bootloader, como grub pero parece que por que es muy simple de configurar y se banca FAT16 lo eligen). Lo instala en la particion 1 del pendrive por que lo que toca es el volume boot record de la particion seleccionada. Supongo que tambien se setea la flag de boot/activado al volume en cuestion.  Esto lo que hace es  1-write a boot sector to the partition (vbr boot code)
+                                            2-write a file to the filesystem in the partition:  ldlinux.sys wich contains boot loader code.
+"   Bueno  aca llegue al boot loader. El boot loader es un programa que se inicializa desde el pendrive y que te permite elegir que sistema operativo correr. Es como un pequeño sistema operativo en si mismo por que te deja navegar los archivos para loadearlos.
+    En los hechos, el boot loader es un codigo binario que va a ser copiado a la memoria por el vbr y que le va a permitir a el usuario elegir un kernel (binario que maneja los recursos del sistema) y una ramdisk image (creo que es algo asi como el minimo filesystem que necesitas para correr un linux) para cargar. Y los va a copiar donde van y supongo que va a descomprimir la image tambien."
+  
+     -montar el sistema de archivios y escribir vmlinuz (kernel binary) y initrd.gz (ramdisk image)
+     - agregar estas 2 lineas:
+                                          default vmlinuz
+                                          append initrd=initrd.gz
+                                          prompt 1 
+     a un archivo nuevo syslinux.cfg
+     -desmontar pendrive 
+
+     Nota: Un paso antes de desmontar el pendrive dice: si usaste hd-media image (sera una ramdisk image en particular?) copia el ISO file de una Debian ISO image al pendrive
+        Creo que a mi no me haria falta...
+
+       bueno estoy listo para matar al pen...
+
+- Bueno esto no anduvo muy bien en mi compu(me corrio el instalador y me instalo el sistema debian pero fallaba todo el tiempo con error de kernel de io (al escribir al disco) ). Termine bajando una live hibrida que se puede hacer dd directamente al pendrive
+
+
+
+
+     
+
+
+
+

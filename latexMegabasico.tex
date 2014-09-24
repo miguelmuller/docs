@@ -1,0 +1,61 @@
+% Este documento esta pensado para que lo veas ya compilado, el pdf
+% Linda explicacion sobre latex: https://help.ubuntu.com/community/LaTeX
+% Es un markup language (como html) y cumple el mismo proposito. Se puede convertir a pdf y html
+% Aca hay una referencia del lenguaje http://www.ntg.nl/doc/biemesderfer/ltxcrib.pdf
+\begin{Document}
+
+\section{Tags mas usados...(se explican solos) de Layout}
+\verb 
+/
+\section{Primera Seccion}
+  \subsection{Primera Subseccion}
+    \begin{itemize}
+    \Item
+    Soy el primer Item
+    \Item
+    Soy el segundo item
+    \end{itemize}
+    \subsubsection{Primera Subsubseccion}
+      \subsubsection*{Hijo de subsubseccion 1}
+      Estoy dentro del primer subtitulo de la Primera Subsubseccion
+      \subsubsection*{Hijo de subsubseccion 2}
+      Estoy dentro del segundo subtitulo de la Primera Subsubseccion
+    \subsubsection{Segunda Subsubseccion}
+  \subsection{Segunda Subseccion}
+\section{Segunda Seccion}
+/
+
+\section{Avanzado}
+  \subsection{misc}
+  \begin{itemize}
+  \Item
+  Indice: es en realidad \\tableofcontents y se genera a partir de las secciones, capitulos,etc. No va andar si corriste una sola vez por que donde se genera tdv no se conocen las secciones.
+  \Item 
+  Referencias: \\label{marker} / \\ref{marker} . Idem indice(tableofcontents) se generan con la segunda corrida
+  \item
+  Apendice e inclusiones de archivos pdf:
+  \end{itemize}
+
+  \subsection{math}
+  \begin{itemize}
+  \Item
+  Con  ( signo pesos) una vez entro en modo math de forma inline (o sea mete una formulita en un p\'arrafo)
+  \Item 
+  Con (signo pesos signo pesos) entro en modo math pero en forma block (o sea formula en una linea separada)
+  \end{itemize}
+
+  \subsection{otros tags}
+  \begin{itemize}
+  \Item
+  Con  ( signo pesos) una vez entro en modo math de forma inline (o sea mete una formulita en un p\'arrafo)
+  \Item 
+  Con (signo pesos signo pesos) entro en modo math pero en forma block (o sea formula en una linea separada)
+  \end{itemize}
+  
+
+\end{Document}
+
+% TO DO:
+% QUE HACE VERB QUE USE ACA ? USALO EN LO DE TABLEOFCONTENTS Y SIGNO PESOS
+% DOCUMENTO MINIMO CON EL TEMA DE LOS IDIOMAS Y LOS ACENTOS
+
