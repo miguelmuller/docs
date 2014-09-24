@@ -84,7 +84,16 @@ External Diff and Merge tools.
 
 Aparentemente las merge tools de p4(perforce) son muy buenas. Me las bajo de la pajina (p4Merge) y para instalarlas solo hay que descomprimirlas en algun lugar que persista y hacer un link simbolico de  p4Merge en /usr/local/bin/p4merge.
 
-En /usr/local/bin tambien hay que crear 2 scripts wrappers para que se corra al diff y al merge con argumentos distintos. Es decir, git llama a los scripts. Los scripts acomodan los argumentos (a diff, por ejemplo solo se le pasan los argumentos file-orig y file-modified.)
+En /usr/local/bin tambien hay que crear 2 scripts wrappers (lo que esta en usr local bin es ejecutable como aplicacion por todo el mundo)
+> cat /usr/local/bin/extMerge
+#!/bin/sh
+/usr/local/bin/p4merge $*  (con todos los mismos arguentos que este script)
+
+> cat /usr/local/bin/extDiff
+#!/bin/sh
+[ $# -eq 7 ] &&  /usr/local/bin/p4merge "$2" "$5" (solo con los argumentos 2 y 5 pasados a este script)
+
+La idea es correr al diff y al merge con argumentos distintos. Es decir, git llama a los scripts siempre con los mismos 7 argumentos. Los scripts acomodan los argumentos (a diff, por ejemplo solo se le pasan los argumentos file-orig y file-modified.)
 
  
 
