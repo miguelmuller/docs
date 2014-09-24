@@ -61,8 +61,27 @@ $>git commit -m "tests on git" (commitea un snapshot a la current branch (git st
       
 Para ver que archivos estan en el staging area, y que branch estoy actualmente uso
 $> git status
-    
 
 
+Docs
+Lo anterior funciono. Ahora tengo un directorio con git instalado (se hizo git init) pero que no esta linkeado a mi repo en la nube
+
+Bueno ahora yo tengo mi branch bien limpita con lo que yo quiero en mi repositorio local: .git.
+Quiero subir el estado actual al repositorio en la nube (en los sevidores de github).
+
+Por alguna razon mi repo local no tiene el repo remoto origin configurado (el de la nube) entonces hago
+$> git remote add origin https://github.com/miguelmuller/docs.git
+y ahora 
+$> git remote show origin 
+me muestra que la url de fetch y pull son la que puse arriba para el remote origin
+me muestra la branch que es la head(la branch actual, a la que se esta comiteando) en el remote (master).
+me dice que hay un automerge de master a master (algo de unas references)
+Entonces pruebo
+$> git push origin (para subir mis cambios a la nube) 
+
+
+
+
+ 
 
   

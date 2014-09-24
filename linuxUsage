@@ -662,14 +662,9 @@ Para setear autoindent y tabs como 2 espacios y un par de cosas mas.
   
 FIND
 
-
-
-
 Buscar Archivos 
 
-
 find, el usage basico es 
-
 
 find <directiorio donde buscar> -name <nombre del archivo a buscar> 
 
@@ -711,11 +706,19 @@ xargs rm < /tmp/list (para eliminar archivos q estan en un lista)
 
 
 
-TAR
+TAR (DEPRECATED, USAR CPIO)
 comandos basicos:
 extraer de un .tar
-tar -xpf <nombre del fichero>
+tar -xvpf <nombre del fichero>
 comprimir a un .tar
+tar -cvf
+
+Opciones de tar: 
+  -x extract
+  -c create 
+  -f siempre va al final es por que tar espera un -f antes del archivo a usar para comprimir o para descomprimir
+  -v verbose
+  -p preservePermissions
 
 
 CP
@@ -723,6 +726,30 @@ copiar una carpeta de un lado al otro.
 Me paro (adenrto de dest folder) donde quiero tener mi carpeta y hago
 cp -r ./path/to/source/folder/SourceFolder ./
 esto me deja la carpeta SourceFolder en el directorio actual (destFolder)
+
+CPIO (ver en.wikipedia.org/wiki/Cpio)
+es un programita que tiene 3 modos 
+copy-out (-o):
+  Recibe una lista de archivos (incluyendo directorios) y los concatean uno atras del otro en un archivo grande (archive)
+  ejemplo: $> find . -depth -print | cpio -o > /path/archive.cpio
+copy-in  (-i):
+  Toma un archive y lo lee y va recreando el directory tree que arhivaste
+  ejemplo: $> cpio -i -vd < archive.cpio   (la -d es para construir directorios cuando es necesario)
+  ejemplo: $> cpio -i -d etc/fstab < archive.cpio
+pass   (-p):
+  Combina las opciones -o y -i. Toma el directorio donde escribir como argumento. Sirve para copiar directorios
+  ejempo: $> find . -depth -print | cpio -p -dumv new-path
+
+CPIO + GZIP
+Si quiero comprimir un directorio, lo que puedo hacer es
+$> find . -type -f -name '*.sh' -print | cpio -o | gzip > sh.cpio.gz
+Esto lo que hace es mandar al archivo stdin una lista de archivos (aca solo incluyendo archivos regulares por quefiltro todo lo demas (con la opcion -type f) pero normalmente va a copiar tambien archivos que representan directorios (todo en linux son archivos)). Luego, ejecuta cpio tomando como file de entrada ah el stdin (entre pipes, estoy ejecutando cpio en su modo output. Cpio necesita recibir 2 argumentos: un archivo con una lista de archivos para concatenar y un archivo de destino. En este caso no se provee ninguna de las dos por lo que los que se usan son stdin y stdout) y escribiendo al stdout. Luego se gorre gzip sobre el archivo todo concatenado que se escribio al stdout y que se redirecciono al stdin debido al pipe. 
+=> Entendiendo como funciona:
+  Find no le da bola al stdin y escribe al stdout. Como esta el pipe, el stdin de cpio es el stdout de find. (pensa en como funciona el stdin cuando se toma del teclado. (es como en real time, valor que agrego, valor que entra el programa. Puedo despues seguir agregando). Por esta razon en paralelo se estan calculando y encontrando los nombres del find y agregando al archive (find lo hacer ordenadamnete).  Una vez que se crea todo el arhivo todo junto se pasa como stdout de cpio y stdin de gzip todo el chunk de archivos todo junto. gzip agarra ese chunk y lo comprime y lo escribe comprimido a un archivo.
+
+
+ 
+
 
 
 
@@ -793,20 +820,111 @@ nativeInstruments (berlin)
 
 
 
-
+SOX
 Improved line to find speech in audio using sox. (try lowering time constant -T to 0.25 again)
 sox h7.wav h7.%3.wav -S -V3 vad -t 1 -T 1 trim 0 2 : newfile : restart 2>timestamps.txt
 
 
-temp(borrar cuando android se encuentre versionado y en github):
-el que disparo todo (el app que va que implemnenta esto es GNURoot creo)
-https://groups.google.com/forum/#!msg/proot_me/zAOWi2eRc0o/ayeP11Bhq1gJ
-proot
-http://proot.me/
-chroot
+CHROOT
+
 https://wiki.archlinux.org/index.php/Chroot
 chroot brak out of jail
 http://www.bpfh.net/simes/computing/chroot-break.html
 
 
 http://www.symantec.com/connect/blogs/monitoring-android-network-traffic-part-i-installing-toolchain
+
+
+Info sobre DISCOS.
+
+Para saber que discos hay registrados por el kernel
+df -h
+Para saber en que disco estoy parado
+df -h . 
+
+
+Discos 
+Los discos tienen lo que se llama mbr. 
+byte 0 el bootstrap code area (lo que va a linkear a un bootLoader) de 446 bytes (en sectores?)
+byte 446 PartitionEntry1 tamaño 16 bytes
+                                0: status byte (bootable/) (1byte)
+                                1: CHS (cylinder head sector) Address of first absolute sector of partition   
+                                4: partition type (1byte)
+                                5: CHS last absolute sector
+                                8: LBA Adress (adressea por bloque) 32 bits? (La abstraccion de pensar por bloques y asi independizarse del odioso CHS que solo sirve para discos rigidos con cylindros cabezas y sectores)
+                                9: Number of sectors in partition
+    
+1Byte Status
+
+
+DD
+skip es de lo que estoy copiando (de lo que estoy recibiendo) (if) y seek es en lo que estoy escribiento(of)
+
+Meto el usb y el sistema lo lee como /dev/sdc
+-para copiar todo el disco
+dd if=/dev/sdc of=pen.iso
+-para copiar una particion
+dd if=/dev/sdc1 of=penFirstPartition.iso
+-para copiar la partition table
+dd if=/dev/sdc of=partitionTableSdc.bin bs=1 skip=446 count=64
+-para restaurarla 
+dd if=partitionTableSdc.bin of=/dev/sdc bs=1 seek=446 count=64
+
+Aparentemente casi todos los discos tienen sector size 512 bytes.
+
+Ya hice una copia de mmi mbr. Puedo boletear el penddrive e instalar ubuntu. No lo Baje!!!
+
+AHHHH LA CONCHA DE TU MADRE!!!
+Asi funciona esto: 
+El Mbr del fisical drive tiene 
+0   -  boot code / 446 Bytes
+446 -  partition table /  16 * 4 Bytes = 
+510 -  boot signature / 2 Bytes
+
+Cuando se "instala una mbr" se escribe una cosa asi en el offset 0 de memoria. En el lugar del boot code se escribe un programa que escanea las particiones de la tabla de particiones que esta mas abajo (que tiene posiciones de memoria y flag de activo  de las 4 particiones posibles*) y busca que haya una unica con la flag de activa. Cuando la encuentra (o sea supongo que salta ante la primera pero es para researchear...) carga una cantidad determinada de memoria de esa particion (a esto se le llama chain loading) que se llama el vbr (o sea lo analogo al mbr pero para el volumen (o particion) o sea almacenado en la primera posicion del volumen o particion, el codigo que maneja creo que es el mismo por que se lee igual que el del boot code del mbr ) 
+
+
+Links interesantes 
+http://www.tldp.org/LDP/intro-linux/html/sect_03_01.html
+
+
+http://tldp.org/HOWTO/Partition/fdisk_partitioning.html
+
+Este manual explica como instalar undebian a un pendrive (debian es la base de ubuntu)
+  https://www.debian.org/releases/stable/i386/ch04s03.html.en
+
+Lo que hace es:
+    -crea una particion fat16 con fdisk /dev/sdX  (Pone la flag de booteable! y crea una particion con tipo FAT16 (codigo hexa=6))
+    -instala una mbr en el pendrive (creo que con fdisk lo puedo hacer) 
+      install-mbr /dev/sdX
+    -crea un filesystem (asi le puedo escribir al pendrive)( Importante haber creado la particion con fdisk antes) 
+      mkdosfs /dev/sdX1
+
+    -instala syslinux en el pendrive (syslinux es un bootloader, como grub pero parece que por que es muy simple de configurar y se banca FAT16 lo eligen). Lo instala en la particion 1 del pendrive por que lo que toca es el volume boot record de la particion seleccionada. Supongo que tambien se setea la flag de boot/activado al volume en cuestion.  Esto lo que hace es  1-write a boot sector to the partition (vbr boot code)
+                                            2-write a file to the filesystem in the partition:  ldlinux.sys wich contains boot loader code.
+"   Bueno  aca llegue al boot loader. El boot loader es un programa que se inicializa desde el pendrive y que te permite elegir que sistema operativo correr. Es como un pequeño sistema operativo en si mismo por que te deja navegar los archivos para loadearlos.
+    En los hechos, el boot loader es un codigo binario que va a ser copiado a la memoria por el vbr y que le va a permitir a el usuario elegir un kernel (binario que maneja los recursos del sistema) y una ramdisk image (creo que es algo asi como el minimo filesystem que necesitas para correr un linux) para cargar. Y los va a copiar donde van y supongo que va a descomprimir la image tambien."
+  
+     -montar el sistema de archivios y escribir vmlinuz (kernel binary) y initrd.gz (ramdisk image)
+     - agregar estas 2 lineas:
+                                          default vmlinuz
+                                          append initrd=initrd.gz
+                                          prompt 1 
+     a un archivo nuevo syslinux.cfg
+     -desmontar pendrive 
+
+     Nota: Un paso antes de desmontar el pendrive dice: si usaste hd-media image (sera una ramdisk image en particular?) copia el ISO file de una Debian ISO image al pendrive
+        Creo que a mi no me haria falta...
+
+       bueno estoy listo para matar al pen...
+
+- Bueno esto no anduvo muy bien en mi compu(me corrio el instalador y me instalo el sistema debian pero fallaba todo el tiempo con error de kernel de io (al escribir al disco) ). Termine bajando una live hibrida que se puede hacer dd directamente al pendrive
+
+
+
+
+     
+
+
+
+
