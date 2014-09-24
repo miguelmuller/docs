@@ -7,13 +7,28 @@ Para acceder a la data en la nube (en los servidores de github) tengo que agrega
 
 Ahora podes hacer fetch para ese "remote" para traer la data. Pero recorda que el fetch te trae las branches (y crea referencias a las mismas) que hay en el "remote" y no te las mergea con las tuyas. Entonces podes hacer el merge vos o podes hacer pull.
   Un pull hace un fetch y ademas mergea las branches que fueron "trackeadas" (un clone "trackea" la master branch. "trackear" no es mas que hacer que se mergeen las branches cuando se hace un pull).
-  $ git remote show <nombre del remote>  te muestra como tenes configurado un remote para el pull y el push (que branches se mergean automaticamente)
+  $ git remote show <nombre del remote>  te muest:qra como tenes configurado un remote para el pull y el push (que branches se mergean automaticamente)
 
 Pero... Que es una branch? 
-  Una branch no es mas que una sucesion de commits encadenados.
+  Una branch no es mas que un puntero a un commit. (para verlo como branch podes pensar como que en realidad la branch es el recorrido desde el primer commit hasta este commit, pero es lo mismo)
   Pero entonces... Que es un commit? 
     Un commit es un snapshot del sistema de archivos versionados. Podes pensarlo como el estado del directorio de trabajo.
     Yo trabajo en mi working directory. Agregar algun archivo al staging area hace que éste aparezca en el snapshot que se crea al commitear.(Expandir un poco mas en detalle)
+     Commit: 
+      Un commit object tiene un puntero a el snapshot del content que stagie (los que no modifique son links/ punteros a los del mismo nombre en la version anterior), tambien tiene punteros a el snapshot padre (o los snapshots padres en caso de ser el commit resultado de un merge) y metadata (la idea es ir persistiendo los datos como si se sacaran fotos a el filesystem cuando haces commit. 
+      Solo se van a ver en el snapshot los cambios que son stageados previo al commit. 
+
+    branching: 
+      Si vengo trabajando (encadeno commits uno atras del otro, cada vez que hago commit se agarra el ultimo commit y se crea un nuevo snapshot valiendose (apuntando a ) el ultimo commit). Cambiar de branch es cambiar a cual consideras como tu ultimo commit. La informacion de la branch va a ser justamente eso: un puntero al que consideras que fue el ultimo commit de la branch)
+
+      
+      C1 <- C2 <- ... <- CN <- Cn+1 <- Cn+2
+                           \-> Cn+3 <- Cn+4
+
+      En la imagen, antes de commitear Cn+1 se creo una nueva branch (no se checkoutio a la misma) 
+      y se siguio comiteando a la original. Despues del commit Cn+2 se checkoutio a la branch nueva 
+      y se empezo a comitear a esa branch      
+
 
 Como creo una nueva branch? 
   $git branch <nombre>  
@@ -41,4 +56,4 @@ Tip:
 
 
 Ojo: 
-  No te vayas(git no t eva a dejar) de una branch en la que no commiteaste todos los cambios que te interesa salvar, por que al irte de la branch se checkoutea otra y se pisa el working directory  
+  No te vayas(git no t eva a dejar) de una branch en la que no commiteaste todos los cambios que ate interesa salvar, por que al irte de la branch se checkoutea otra y se pisa el working directory  
