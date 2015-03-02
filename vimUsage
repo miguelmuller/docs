@@ -1,0 +1,7 @@
+REPLACE MODE  (R comman commandd)
+
+La mejor manera de pensarlo era como que el Append ( correr en uno el cursor a la derecha y despues entrar en Insert Mode, ese qe tanto conoces. ) equivale a justamente eso. Correr el cursor para la derecha y hacer un insert.
+
+Como es el editor mode command para yank word ? 
+
+existe alguna forma de hacer que en la navecacion del edit oinsert mode, al cambiar de linea vaya a la ultima posicion que tuvo esa linea?  cada linea con memoria y no una posicion tipo impresora para todas la lineas?
